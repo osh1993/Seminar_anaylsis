@@ -72,6 +72,11 @@
   Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
     t.addEventListener("click", function () { showView(t.dataset.view); });
   });
+  // 안내 카드 등에서 특정 뷰로 이동하는 링크(data-goview) 위임 처리
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest ? e.target.closest("[data-goview]") : null;
+    if (a) { e.preventDefault(); showView(a.getAttribute("data-goview")); window.scrollTo(0, 0); }
+  });
 
   /* ---------- 목차(TOC) ---------- */
   function buildTOC() {
@@ -452,18 +457,45 @@
   }
 
   /* ---------- 참고문헌 ---------- */
+  // 강조 자료(featured) 카드 HTML — 참고문헌 탭 최상단 고정 블록
+  function featuredRefsHtml() {
+    var feat = (D.references || []).filter(function (r) { return r.featured; })
+      .sort(function (a, b) { return (a.material_order || 99) - (b.material_order || 99); });
+    if (!feat.length) return "";
+    var cards = feat.map(function (r) {
+      // 링크 대상: resolved_url(실제 목적지)이 있으면 그것으로, 없으면 url로
+      var href = r.resolved_url || r.url;
+      var cited = (r.cited_by || []).map(function (c) {
+        var id = slideKey(c.day, c.page);
+        return '<a class="cite-link" href="#' + id + '" data-jump="' + id + '">[D' + c.day + '-p' + c.page + ']</a>';
+      }).join(" ");
+      return '<a class="mat-card" href="' + esc(href) + '" target="_blank" rel="noopener">' +
+        '<div class="mat-title">' + esc(r.title || r.label || r.id) +
+        ' <span class="mat-ext">새 탭 ↗</span></div>' +
+        (r.note ? '<div class="mat-note">' + esc(r.note) + '</div>' : '') +
+        '</a>' +
+        (cited ? '<div class="mat-cited">관련 슬라이드: ' + cited + '</div>' : '');
+    }).join("");
+    return '<div class="materials-block">' +
+      '<h3 class="materials-h">📎 강의 실습 자료</h3>' +
+      '<p class="materials-sub">발표자가 제공한 공식 강의 자료 허브입니다. 실습 프롬프트·교안·GitHub 세팅 가이드를 여기서 내려받으세요.</p>' +
+      '<div class="materials-grid">' + cards + '</div></div>';
+  }
+
   function buildRefs() {
     var box = document.getElementById("refsList");
     var groups = {};
     var labelMap = { paper: "논문", "blog/news": "블로그 / 뉴스", docs: "공식 문서", tool: "도구 / 코드", etc: "기타" };
     var orderTypes = ["paper", "docs", "blog/news", "tool", "etc"];
+    // featured 항목은 상단 강조 블록에서만 노출 — 일반 유형별 목록에서는 제외(중복 방지)
     (D.references || []).forEach(function (r) {
+      if (r.featured) return;
       var t = r.type || "etc";
       (groups[t] = groups[t] || []).push(r);
     });
     var typeKeys = orderTypes.filter(function (t) { return groups[t]; })
       .concat(Object.keys(groups).filter(function (t) { return orderTypes.indexOf(t) < 0; }));
-    var html = "";
+    var html = featuredRefsHtml();  // 강의 실습 자료 강조 블록 고정
     typeKeys.forEach(function (t) {
       html += '<div class="ref-group"><h3>' + esc(labelMap[t] || t) +
         ' <span style="color:var(--muted);font-weight:400">(' + groups[t].length + ')</span></h3>';

@@ -197,6 +197,11 @@ footer a{color:var(--dim)}
 window.NOTE_DATA = {
   "title": "PE & Vibe Coding 강의 노트 — 말로 지시하는 AI에서, AI에게 만들게 하는 개발까지",
   "reading_time": "약 30분",
+  "materials": [
+    {"title": "PE & VIBE 강의자료 폴더 (Google Drive)", "url": "https://drive.google.com/drive/folders/1Dy77vdc2J_PT9yUtYHdWaFmErnUS7SL9", "note": "발표자(엄광호)가 제공한 강의 자료 모음 폴더. 교안과 실습 파일을 내려받을 수 있다.", "page": 2},
+    {"title": "PE & VIBE 실습 프롬프트 모음 (Notion)", "url": "https://www.notion.so/PE-VIBE-3242cc9fe73280f29c80dfa1a9a04fad", "note": "강의 실습에 쓰이는 프롬프트 원본 페이지(ChatGPT 실무·엑셀 자동화·VBA·Codex 실습).", "page": 39},
+    {"title": "GitHub 세팅 따라하기 (Notion)", "url": "https://www.notion.so/3352cc9fe73280a599dbfea587f1cc6e", "note": "바이브코딩 결과물을 배포하기 위한 GitHub 초기 설정 가이드.", "page": 174}
+  ],
   "prologue": "이 강의는 하나의 큰 질문에서 출발한다. '이제 컴퓨터에게 코드가 아니라 말로 일을 시킬 수 있게 되었다면, 그 말을 어떻게 해야 잘 시키는 것일까?' [D1-p7][D1-p8] 그 답을 찾아가는 여정은 프롬프트 엔지니어링(AI에게 지시하는 기술)에서 시작해, ChatGPT를 실무에 쓰는 법과 정보 보안, AI가 스스로 판단해 도구를 쓰는 '에이전트'의 원리, 그 에이전트로 코드를 만들어 내는 바이브 코딩과 OpenAI Codex, 에이전트를 확장하는 MCP·Skills, 그리고 만든 것을 세상에 올리는 IT 기초와 배포까지 이어진다 [D1-p4][D1-p5]. 강의 제목이 '프롬프트 엔지니어링(PE)과 바이브 코딩'인 이유가 여기 있다 — 이 둘은 'AI에게 일을 잘 시키기'라는 한 흐름의 시작과 끝이다 [D1-p1]. 이 노트는 209장의 슬라이드를 등장 순서가 아니라 '무엇을 왜 이 순서로 배우는가'라는 학습 여정으로 다시 엮은 것이다 [D1-p70].",
   "chapters": [
     {
@@ -367,6 +372,22 @@ window.NOTE_DATA = {
        +  '<span class="etag">PROLOGUE · 들어가며</span>'
        +  markdown(D.prologue)
        +  '</div></section>';
+
+  // 📎 강의 실습 자료 콜아웃 (프롤로그 하단)
+  if (D.materials && D.materials.length) {
+    var mats = D.materials.map(function(m){
+      var jump = m.page ? '<a class="mat-jump" href="index.html#d1p'+m.page+'">슬라이드 p'+m.page+' →</a>' : '';
+      return '<div class="mat-item">'
+           + '<a class="mat-link" href="'+esc(m.url)+'" target="_blank" rel="noopener">'
+           + esc(m.title)+' <span class="mat-ext">새 탭 ↗</span></a>'
+           + (m.note ? '<div class="mat-note">'+esc(m.note)+'</div>' : '')
+           + jump + '</div>';
+    }).join('');
+    html += '<section class="block"><div class="materials-callout">'
+         +  '<div class="mat-head">📎 강의 실습 자료</div>'
+         +  '<div class="mat-sub">발표자가 제공한 공식 자료 허브 — 프롬프트 모음·교안·GitHub 세팅 가이드</div>'
+         +  '<div class="mat-grid">'+mats+'</div></div></section>';
+  }
 
   // 장 목차
   html += '<section class="toc-wrap" id="toc">'
