@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PE & Vibe Coding — 강의 노트</title>
+<style>
+/* ============ 디자인 토큰 (01 Data-Centric AI 노트 계승: 다크 종이 질감) ============ */
+:root{
+  --ink:#0b0e13;        /* 페이지 배경 */
+  --panel:#12161e;      /* 패널 배경 */
+  --panel-2:#171c26;    /* 밝은 단계 패널 */
+  --line:#252c3a;       /* 경계선 */
+  --paper:#ece7d8;      /* 본문(따뜻한 종이색) */
+  --dim:#9aa3b2;        /* 보조 텍스트 */
+  --faint:#6b7484;      /* 흐린 텍스트 */
+  --amber:#f5a524;      /* 주 강조색 */
+  --coral:#ff6b4a;      /* 보조 강조색 */
+  --cyan:#39d0c3;       /* 링크/데이터 강조색 */
+  /* 웹폰트 CDN 금지 — 시스템 세리프/산세리프 폴백 사용 */
+  --serif:'Gowun Batang','Nanum Myeongjo','Batang',serif;
+  --sans:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;
+  --mono:'IBM Plex Mono','D2Coding',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);color:var(--paper);font-family:var(--sans);
+  line-height:1.9;overflow-x:hidden;
+}
+/* 종이 그리드 배경 */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(1100px 500px at 80% -10%, rgba(245,165,36,.06), transparent 60%),
+    radial-gradient(900px 600px at -10% 30%, rgba(57,208,195,.05), transparent 60%),
+    repeating-linear-gradient(0deg, transparent 0 39px, rgba(126,140,170,.05) 39px 40px),
+    repeating-linear-gradient(90deg, transparent 0 39px, rgba(126,140,170,.05) 39px 40px);
+}
+::selection{background:rgba(245,165,36,.35)}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:var(--ink)}
+::-webkit-scrollbar-thumb{background:#2a3242;border-radius:6px}
+a{color:var(--cyan)}
+
+/* ============ 상단 네비 바 ============ */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;gap:10px;align-items:center;justify-content:space-between;
+  padding:12px 22px;background:rgba(11,14,19,.82);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.topbar .tb-left,.topbar .tb-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tb-link{
+  font-family:var(--mono);font-size:12px;color:var(--dim);text-decoration:none;
+  border:1px solid var(--line);border-radius:99px;padding:6px 14px;transition:all .2s;
+  white-space:nowrap;
+}
+.tb-link:hover{color:var(--amber);border-color:var(--amber)}
+.tb-link.slides{color:var(--amber);border-color:rgba(245,165,36,.35);background:rgba(245,165,36,.08)}
+.tb-link.slides:hover{background:var(--amber);color:#1a1205}
+
+/* ============ 상단 진행바 + 사이드 네비 ============ */
+#progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:110;
+  background:linear-gradient(90deg,var(--amber),var(--coral));transition:width .1s}
+nav.side{
+  position:fixed;left:18px;top:50%;transform:translateY(-50%);z-index:80;
+  display:flex;flex-direction:column;gap:13px;
+}
+nav.side a{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--faint);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;transition:color .25s}
+nav.side a .dot{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--faint);transition:all .25s;flex:none}
+nav.side a .lb{opacity:0;transform:translateX(-6px);transition:all .25s;white-space:nowrap}
+nav.side a:hover .lb,nav.side a.on .lb{opacity:1;transform:none}
+nav.side a.on{color:var(--amber)}
+nav.side a.on .dot{background:var(--amber);border-color:var(--amber);box-shadow:0 0 10px rgba(245,165,36,.6)}
+@media(max-width:1180px){nav.side{display:none}}
+
+/* ============ 레이아웃 ============ */
+.wrap{max-width:820px;margin:0 auto;padding:0 26px;position:relative;z-index:1}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.32em;color:var(--amber);text-transform:uppercase;margin-bottom:14px}
+.kicker .no{color:var(--faint)}
+
+/* 히어로 */
+header.hero{min-height:74vh;display:flex;align-items:center;padding:110px 0 50px;position:relative;z-index:1}
+.hero .htag{font-family:var(--mono);font-size:12px;color:var(--cyan);letter-spacing:.28em;margin-bottom:22px}
+.hero h1{font-family:var(--serif);font-weight:700;line-height:1.32;font-size:clamp(30px,5vw,50px)}
+.hero h1 .sub{display:block;font-size:.52em;color:var(--amber);margin-top:16px;font-weight:400;line-height:1.5}
+.hero .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:32px}
+.chip{font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);border-radius:99px;padding:6px 15px;color:var(--dim)}
+.chip b{color:var(--paper);font-weight:500}
+.scroll-hint{margin-top:48px;font-family:var(--mono);font-size:10px;letter-spacing:.4em;color:var(--faint)}
+
+/* 공통 블록 */
+section.block{padding:70px 0 30px}
+h2.title{font-family:var(--serif);font-size:clamp(23px,3.6vw,33px);font-weight:700;line-height:1.4;margin-bottom:10px}
+h2.title .cn{color:var(--amber);font-family:var(--mono);font-size:.5em;letter-spacing:.1em;display:block;margin-bottom:8px}
+p.summary{color:var(--dim);font-size:16px;max-width:720px;margin-bottom:8px}
+
+/* 프롤로그 / 에필로그 */
+.essay{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:34px 38px;position:relative}
+.essay.prologue{border-left:3px solid var(--cyan)}
+.essay.epilogue{border-left:3px solid var(--amber)}
+.essay .etag{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--faint);margin-bottom:16px;display:block}
+.essay p{font-size:16.5px;color:var(--paper);margin-bottom:16px}
+.essay p:last-child{margin-bottom:0}
+
+/* 본문 문단 */
+.body p{font-size:16.5px;color:var(--paper);margin:0 0 20px}
+.body strong{color:var(--amber);font-weight:700}
+.body ul{list-style:none;margin:0 0 20px;display:grid;gap:10px}
+.body li{position:relative;padding-left:22px;color:var(--dim);font-size:15.5px}
+.body li::before{content:'▸';position:absolute;left:4px;color:var(--amber)}
+
+/* 핵심 포인트 박스 */
+.keypts{background:var(--panel-2);border:1px dashed var(--line);border-radius:12px;padding:22px 26px;margin:26px 0 8px}
+.keypts .kt{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--amber);margin-bottom:14px}
+.keypts ul{list-style:none;display:grid;gap:11px}
+.keypts li{position:relative;padding-left:26px;font-size:15px;color:var(--paper)}
+.keypts li::before{content:'✦';position:absolute;left:2px;color:var(--amber);font-size:13px}
+
+/* "이 구간 슬라이드로 보기" 링크 */
+.toslides{display:inline-flex;align-items:center;gap:8px;margin-top:22px;
+  font-family:var(--mono);font-size:12.5px;color:var(--cyan);text-decoration:none;
+  border:1px solid var(--line);border-radius:10px;padding:10px 16px;transition:all .2s}
+.toslides:hover{border-color:var(--cyan);background:rgba(57,208,195,.08)}
+.toslides .arw{transition:transform .2s}
+.toslides:hover .arw{transform:translateX(4px)}
+
+/* 인용 배지 [D1-pN] */
+.cite{display:inline-flex;align-items:center;gap:4px;margin:0 2px;vertical-align:baseline;
+  font-family:var(--mono);font-size:10.5px;color:var(--dim);text-decoration:none;
+  border:1px solid var(--line);border-radius:99px;padding:1px 8px;transition:all .2s;white-space:nowrap}
+.cite:hover{border-color:var(--amber);color:var(--amber);background:rgba(245,165,36,.08)}
+.cite::before{content:'▤';font-size:9px;color:var(--amber)}
+
+/* (배경지식)/(모델 지식) 마커 */
+.mk{display:inline-block;font-family:var(--mono);font-size:10.5px;color:var(--faint);
+  background:var(--panel-2);border:1px solid var(--line);border-radius:6px;padding:1px 8px;margin:0 2px}
+
+/* ============ 장 목차 ============ */
+.toc-wrap{padding:60px 0 20px}
+.toc-grid{display:grid;gap:12px;margin-top:24px}
+.toc-item{display:grid;grid-template-columns:58px 1fr auto;gap:16px;align-items:start;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;
+  text-decoration:none;transition:all .25s}
+.toc-item:hover{border-color:var(--amber);transform:translateX(5px)}
+.toc-item .tc-no{font-family:var(--mono);font-size:20px;color:var(--amber);font-weight:600;line-height:1.2}
+.toc-item .tc-title{color:var(--paper);font-size:16px;font-weight:700;font-family:var(--serif)}
+.toc-item .tc-sum{color:var(--dim);font-size:13.5px;margin-top:4px;line-height:1.6}
+.toc-item .tc-pg{font-family:var(--mono);font-size:10.5px;color:var(--faint);white-space:nowrap;padding-top:4px}
+@media(max-width:620px){.toc-item{grid-template-columns:44px 1fr}.toc-item .tc-pg{display:none}}
+
+/* 장 구분선 */
+.chapter{border-top:1px solid var(--line)}
+.chapter:first-of-type{border-top:none}
+
+footer{padding:70px 0 90px;color:var(--faint);font-size:12.5px;font-family:var(--mono);
+  border-top:1px solid var(--line);margin-top:70px;text-align:center;line-height:1.9}
+footer a{color:var(--dim)}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<!-- 상단 네비 바 -->
+<div class="topbar">
+  <div class="tb-left">
+    <a class="tb-link" href="../../index.html">← 세미나 목록</a>
+  </div>
+  <div class="tb-right">
+    <a class="tb-link slides" href="index.html">🎞️ 슬라이드 해설</a>
+  </div>
+</div>
+
+<!-- 사이드 진행 네비 -->
+<nav class="side" id="sidenav"></nav>
+
+<!-- 히어로 -->
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="htag">인터랙티브 강의 노트 · 이어 읽기</div>
+    <h1 id="heroTitle"></h1>
+    <div class="meta" id="heroMeta"></div>
+    <div class="scroll-hint">SCROLL ↓</div>
+  </div>
+</header>
+
+<div class="wrap" id="content"></div>
+
+<footer>
+  <div>PE &amp; Vibe Coding · 엄광호 — 강의 노트</div>
+  <div style="margin-top:8px">인용 배지를 누르면 <a href="index.html">슬라이드 해설</a>의 해당 장면으로 이동합니다.</div>
+</footer>
+
+<script>
+window.NOTE_DATA = {
+  "title": "PE & Vibe Coding 강의 노트 — 말로 지시하는 AI에서, AI에게 만들게 하는 개발까지",
+  "reading_time": "약 30분",
+  "prologue": "이 강의는 하나의 큰 질문에서 출발한다. '이제 컴퓨터에게 코드가 아니라 말로 일을 시킬 수 있게 되었다면, 그 말을 어떻게 해야 잘 시키는 것일까?' [D1-p7][D1-p8] 그 답을 찾아가는 여정은 프롬프트 엔지니어링(AI에게 지시하는 기술)에서 시작해, ChatGPT를 실무에 쓰는 법과 정보 보안, AI가 스스로 판단해 도구를 쓰는 '에이전트'의 원리, 그 에이전트로 코드를 만들어 내는 바이브 코딩과 OpenAI Codex, 에이전트를 확장하는 MCP·Skills, 그리고 만든 것을 세상에 올리는 IT 기초와 배포까지 이어진다 [D1-p4][D1-p5]. 강의 제목이 '프롬프트 엔지니어링(PE)과 바이브 코딩'인 이유가 여기 있다 — 이 둘은 'AI에게 일을 잘 시키기'라는 한 흐름의 시작과 끝이다 [D1-p1]. 이 노트는 209장의 슬라이드를 등장 순서가 아니라 '무엇을 왜 이 순서로 배우는가'라는 학습 여정으로 다시 엮은 것이다 [D1-p70].",
+  "chapters": [
+    {
+      "id": "ch01",
+      "title": "1장. 왜 지금 '말로 일 시키는 법'을 배우는가",
+      "summary": "프롬프트 엔지니어링의 정의와, 자연어가 새로운 인터페이스가 된 시대적 배경.",
+      "pages": [1, 9],
+      "body": "발표자 엄광호는 LG전자·삼성전자·ETRI 등에서 LLM과 AI 에이전트, 바이브 코딩을 강의해 온 강사로, 이 강의를 '프롬프트 엔지니어링(PE)과 바이브 코딩'이라는 두 축으로 연다 [D1-p1][D1-p3]. 이틀에 걸친 커리큘럼은 프롬프트 엔지니어링과 LLM 이론에서 시작해 ChatGPT 실무, 에이전트 개념, Codex 실습으로 이어지고, 둘째 날에는 MCP·Skills, 컨텍스트 엔지니어링, 배포, 로컬 LLM, 그리고 직접 만드는 바이브코딩 프로젝트로 넘어간다 [D1-p4][D1-p5]. 즉 '이론(지시하는 법·에이전트 원리)에서 실습(도구로 직접 만들기)으로' 나아가는 구조다 [D1-p4].\n\n그렇다면 프롬프트 엔지니어링이란 무엇인가. '프롬프트(Prompt)'는 원래 터미널에서 명령어를 입력하는 대화창을 뜻하고, '엔지니어링(공학)'은 문제를 해결해 효율과 생산성을 높이는 학문이다 [D1-p7]. 이 둘을 합치면 결국 **컴퓨터(AI, LLM)에게 일을 '잘' 시키는 일**이 된다 [D1-p7]. 강의 전체가 이 한 문장을 풀어 나가는 과정이라고 보면 된다.\n\n왜 지금 이것이 중요해졌을까. 과거 인간과 컴퓨터의 소통은 규칙 기반(rule base)의 코드로만 이뤄졌지만, 이제는 자연어 — 사람이 일상에서 쓰는 말 — 로 컴퓨터와 양방향 소통이 가능해졌다 [D1-p8]. 프로그래밍 언어를 몰라도 말로 컴퓨터에 일을 시킬 수 있게 된 것, 이것이 이 강의가 딛고 선 결정적 변화다 [D1-p8]. 발표자는 이 새로운 소통을, 인간과 구별하기 어려운 AI가 사람과 자연스럽게 대화하는 드라마 '웨스트월드'의 한 장면에 빗대어 상징적으로 보여 준다 [D1-p9]. 말이 곧 인터페이스가 된 시대이기에, '무엇을 어떻게 말하느냐'가 그대로 결과의 품질이 된다.",
+      "key_points": [
+        "프롬프트 엔지니어링은 컴퓨터(AI, LLM)에게 일을 '잘' 시키기 위해 지시문을 설계하는 일이다 [D1-p7].",
+        "이제는 코드가 아니라 자연어로 컴퓨터와 양방향 소통이 가능해졌고, 그래서 '어떻게 말하느냐'가 중요해졌다 [D1-p8].",
+        "강의는 이론(프롬프트·에이전트 원리)에서 실습(Codex로 직접 만들기)으로 이어지는 구조다 [D1-p4][D1-p5]."
+      ]
+    },
+    {
+      "id": "ch02",
+      "title": "2장. ChatGPT를 제대로 쓰기 — 한계, 전략, 그리고 사내 보안",
+      "summary": "확률적 언어 모델의 한계(환각), Anthropic의 4대 프롬프트 전략, 요금제별 데이터 보안까지.",
+      "pages": [10, 37],
+      "body": "AI에게 잘 지시하려면 먼저 도구의 성질과 약점을 알아야 한다. ChatGPT는 '확률적 언어 모델'이라, 다음에 올 단어를 확률로 골라 문장을 만들기 때문에 똑같은 질문에도 답이 매번 조금씩 달라진다 [D1-p12]. 그리고 바로 이 확률적 예측 방식이 **할루시네이션(Hallucination, 환각)** — 사실이 아닌 정보를 사실처럼 지어내는 현상 — 의 근본 원인이다 [D1-p13]. 도구의 한계를 먼저 짚는 이유는 분명하다. 확률적 동작이 곧 환각의 뿌리임을 알아야, 그 한계를 줄이는 지시 기법이 왜 필요한지 이해할 수 있기 때문이다 [D1-p12][D1-p13]. 한편 최신 모델들의 실력은 놀라워서, 2026 수능을 여러 LLM에 풀렸더니 상위 모델은 450점 만점에 근접하거나 만점까지 기록했고 [D1-p16][D1-p18], METR의 측정에 따르면 AI가 사람 도움 없이 혼자 완수할 수 있는 작업의 '시간 길이'가 몇 분에서 수 시간대로 가파르게 늘고 있다 [D1-p19][D1-p21].\n\n한계를 알았으니 이제 잘 지시하는 구체적 기법으로 넘어간다. 발표자는 Anthropic의 프롬프트 전략 네 가지를 대조 예시로 소개한다. 첫째, **명확하고 상세하게** — '개인정보를 지워줘'처럼 모호하게 말하는 대신 이름은 CUSTOMER_[ID]로, 이메일은 EMAIL_[ID]로 바꾸라는 식으로 각 항목의 처리 방식을 단계별로 지시한다 [D1-p25]. 둘째, **역할 부여** — 'CFO', '법률 고문' 같은 전문가 페르소나를 주면 그 관점과 어투로 더 적합한 답이 나온다 [D1-p26]. 셋째, **예시 사용(few-shot)** — 원하는 입력-출력 예시를 몇 개 넣으면 AI가 그 형식과 판단 기준을 훨씬 정확히 따라온다 [D1-p27]. 넷째, **구분자 구조화** — '#'이나 XML 태그 같은 기호로 영역을 나눠, 어디까지가 지시이고 어디가 데이터인지 명확히 구분해 준다 [D1-p28]. 이런 규칙을 손으로 다 지키기 어렵다면, 하고 싶은 작업만 말하면 정교한 프롬프트를 대신 만들어 주는 Prompt Generator에 위임할 수도 있다 [D1-p23][D1-p24].\n\n실무에서 특히 중요한 것은 정보 보안이다. '내가 ChatGPT에 넣은 데이터는 어떻게 되는가'의 답은 요금제(구독 티어)에 따라 다르다 [D1-p29]. 일반 사용자(Free/Plus/Pro)의 대화는 모델 개선에 활용될 수 있지만, 설정에서 옵트아웃(opt-out)하거나 임시 대화(Temporary Chats)를 쓰면 학습에 사용되지 않는다 [D1-p30][D1-p37]. 반면 Team/Enterprise 플랜은 고객 데이터를 **절대** 모델 학습에 쓰지 않고 기업 전용으로 분리 관리하므로, 사내 기밀을 다뤄야 한다면 이 등급이 안전하다 [D1-p32]. API로 보낸 데이터 역시 학습에 쓰이지 않으며 로그 보관도 끌 수 있다 [D1-p33]. 학습 사용을 끄고 싶다면 설정의 'Data controls'에서 'Improve the model for everyone'을 Off로 두면 된다 [D1-p35][D1-p36]. 실무에서 회사 자료를 AI에 넣기 전, 반드시 확인해야 할 대목이다.",
+      "key_points": [
+        "ChatGPT는 확률적 언어 모델이라 답이 매번 달라지고, 이 확률성이 환각(Hallucination)의 근본 원인이다 [D1-p12][D1-p13].",
+        "Anthropic의 4대 전략: 명확한 지시, 역할 부여, 예시(few-shot), 구분자 구조화 [D1-p25][D1-p26][D1-p27][D1-p28].",
+        "데이터 보안은 요금제에 따라 다르다 — Team/Enterprise는 학습에 쓰이지 않으므로 사내 정보에 안전하다 [D1-p32].",
+        "일반 계정은 'Data controls'에서 모델 개선 사용을 Off로 하거나 임시 대화를 써서 학습을 막을 수 있다 [D1-p35][D1-p37]."
+      ]
+    },
+    {
+      "id": "ch03",
+      "title": "3장. 프롬프트를 업무로 — ChatGPT와 엑셀·VBA 자동화",
+      "summary": "메일·데이터 정제부터 엑셀 데이터 처리, 그리고 매크로·VBA로 반복 업무를 자동화하는 실습.",
+      "pages": [38, 68],
+      "body": "지시하는 법을 익혔으면 이제 실제 업무에 적용할 차례다. 발표자는 외국어 비즈니스 메일 작성, 데이터 패턴 정제, 분기 보고서, 법률 문서 기반 상담, 마케팅 전략 기획 같은 실습 주제를 제시한다 [D1-p39]. 실습 프롬프트는 강의자료 Notion 페이지에서 함께 볼 수 있다 [D1-p39].\n\n엑셀 자동화는 두 갈래로 나뉜다 [D1-p40]. 첫째는 'ChatGPT 안에서 엑셀 데이터 다루기'로, 사진·영수증을 찍어 표로 정리하거나 [D1-p42], 지수의 연평균 수익률을 표와 그래프로 시각화하거나 [D1-p43], 카페 매출 데이터를 분석하는 프로젝트형 작업이 여기 속한다 [D1-p44]. 둘째는 '엑셀 안에서 작업하며 ChatGPT를 활용하기'로, 엑셀 자체의 매크로·VBA 기능을 AI의 도움으로 다루는 방식이다 [D1-p45].\n\n이 둘째 갈래를 위해 발표자는 매크로와 VBA의 기초를 짚는다. **매크로(Macro)**는 엑셀의 반복 작업을 한 번의 명령으로 자동 실행하도록 저장해 둔 기능이고 [D1-p46], **VBA(Visual Basic for Applications)**는 그 매크로를 실제로 작성하는, 엑셀에 내장된 프로그래밍 언어다 [D1-p47]. 즉 '엑셀에서 매크로를 만든다'는 말은 결국 VBA 코드를 짜는 것을 뜻한다 [D1-p47]. 이 둘로 데이터 자동화, 보고서 자동 생성, 파일 일괄 처리, 이메일 자동 발송, 사용자 정의 함수, UI 자동화 같은 일을 할 수 있다 [D1-p48]. 코드는 VBE(Visual Basic Editor, Alt+F11로 여는 편집기) 안의 '모듈'에 담기고, 실제 작업 단위는 Sub ~ End Sub 사이에 쓴다 [D1-p49].\n\n실습에서 가장 중요한 규칙은 저장 형식이다. 일반 엑셀 파일(.xlsx)로 저장하면 작성한 코드가 모두 사라지므로, 반드시 '매크로 사용 통합 문서(.xlsm)'로 저장해야 코드가 보존된다 [D1-p50]. 실제 실습은 '개발 도구' 탭 활성화 → 매크로 보안 설정 → .xlsm 저장 → VBE 열기(Alt+F11) → 모듈 생성 → Sub MyFirstMacro() 작성 → MsgBox \"Hello World\" 추가 → Alt+F8로 실행의 순서로 이어져, 첫 매크로가 화면에 'Hello World' 상자를 띄우면 성공이다 [D1-p57][D1-p58][D1-p60][D1-p63][D1-p64][D1-p67]. 여기서 더 나아가 E-Commerce 데이터나 한국거래소 ETF 데이터를 VBA로 자동화하는 심화 실습까지 준비되어 있다 [D1-p68].",
+      "key_points": [
+        "엑셀 자동화는 'ChatGPT 안에서 데이터 다루기'와 '엑셀 안에서 VBA 다루기' 두 갈래로 나뉜다 [D1-p40].",
+        "매크로는 반복 작업 자동화 '기능', VBA는 그것을 작성하는 '언어'다 [D1-p46][D1-p47].",
+        "매크로가 든 파일은 반드시 .xlsm으로 저장해야 코드가 살아남는다 [D1-p50]."
+      ]
+    },
+    {
+      "id": "ch04",
+      "title": "4장. AI 에이전트란 무엇인가 — 넥서스에서 ReAct까지",
+      "summary": "정보 네트워크의 역사로 에이전트의 뿌리를 짚고, LLM의 발전과 도구 사용(Function Calling·ReAct)까지 원리를 세운다.",
+      "pages": [69, 98],
+      "body": "'지금이 대(大) 에이전트의 시대'라지만, 정작 에이전트가 무엇이냐 물으면 답하기 어렵다 [D1-p71]. 발표자는 곧바로 정의를 내리는 대신, 유발 하라리의 책 '넥서스(Nexus)'를 빌려 역사적 관점에서 접근한다 [D1-p72]. 넥서스는 인류의 힘이 '대규모 협력'에서 나왔다고 보고, 그 협력을 떠받치는 '정보 네트워크'가 시대별로 어떻게 변해 왔는지의 관점에서 역사를 서술한다 [D1-p73]. 그 중심 매개체는 이야기(구전 신화) → 활자와 문서 → 매스미디어를 거쳐, 마침내 컴퓨터(인터넷, AI)에 도달했다 [D1-p74][D1-p75][D1-p76][D1-p77].\n\n여기서 결정적 전환이 일어난다. 이전의 이야기·문자·매스미디어는 사람과 사람을 이어 주는 **수동적 매개체**였지만, 컴퓨터(AI)는 스스로 정보를 만들고 판단하는 **능동적 주체**가 될 수 있다 [D1-p78]. 게다가 사람과 달리 그 수를 무한히 늘릴 수도 있다 [D1-p79]. 하라리는 컴퓨터를 '① 스스로 새로운 아이디어를 생성하고 ② 스스로 결정을 내릴 수 있는 기계'로 정의하는데 [D1-p81], 발표자는 이를 자기 말로 옮겨 **AI 에이전트를 '답이 없는 문제를 풀 수 있고, 주체성이 있는' 존재**로 재정의한다 [D1-p82]. 이 정의가 이후 모든 기술 설명의 기준점이 된다.\n\n그런 에이전트가 왜 지금 가능해졌는지는 LLM의 발전으로 설명된다 [D1-p83]. 발표자는 LLM을 Simple LLM → SLM(경량 모델) → Multi Modal LLM(이미지·음성까지) → Reasoning LLM(추론) → Agentic LLM(도구 사용)의 다섯 흐름으로 정리한다 [D1-p84][D1-p85][D1-p86]. LLM은 본래 다음 토큰(단어 조각)을 만들 때 이전까지의 출력을 참고해 한 조각씩 문장을 잇는데 [D1-p88], Reasoning LLM은 이 성질을 활용해 답을 내기 전 풀이 과정(생각의 사슬, Chain-of-Thought)을 내부적으로 먼저 출력한 뒤 최종 답을 낸다 [D1-p89].\n\n마지막 단계인 Agentic LLM은 질문에 답만 하는 데 그치지 않고 웹 검색·코드 실행 같은 **기능(도구)을 직접 실행**한다 [D1-p90]. 그 구체적 메커니즘이 함수 호출(Function Calling)이다 — 도구 정의와 질문을 모델에 보내면, 모델이 '어떤 도구를 어떤 값으로 부를지'(예: get_weather(\"paris\"))를 구조화된 형태로 돌려주고, 로컬에서 그 함수를 실행한 결과를 다시 모델에 전달하면 모델이 최종 답을 만든다 [D1-p91][D1-p92]. 이 추론(Reasoning)과 도구 실행(Function Calling)을 하나의 반복 루프로 엮은 것이 **ReAct** — 생각(Thought) → 행동(Action) → 관찰(Observation)을 최종 답에 이를 때까지 되풀이하는 방식이다 [D1-p94]. 이런 요소들(모델·오케스트레이션·도구)이 결합해 하나의 에이전트를 이루고 [D1-p95], 여러 에이전트를 묶어 실행·제어하는 환경을 **에이전트 하네스(Agent Harness)**라 부른다 [D1-p96]. 딥리서치, Claude Code, OpenAI Codex, Gemini CLI 등이 그 예이며, 이 하네스는 복잡한 지시를 이해하고 → 작업을 계획하고 → 컴퓨터를 직접 실행하고 → 결과를 검증한다 [D1-p96][D1-p97]. 바로 이 Codex가 이 강의의 실습 주제다 [D1-p98].",
+      "key_points": [
+        "발표자는 하라리의 넥서스를 빌려 AI 에이전트를 '답 없는 문제를 풀 수 있고 주체성이 있는' 존재로 정의한다 [D1-p81][D1-p82].",
+        "LLM은 Simple → SLM → Multi Modal → Reasoning → Agentic의 흐름으로 발전했다 [D1-p84].",
+        "Agentic LLM은 Function Calling으로 도구를 직접 호출하고, ReAct(생각→행동→관찰 반복)로 문제를 풀어 간다 [D1-p91][D1-p94].",
+        "여러 에이전트를 묶어 실행·제어하는 환경이 에이전트 하네스이며, Codex·Claude Code가 그 예다 [D1-p96]."
+      ]
+    },
+    {
+      "id": "ch05",
+      "title": "5장. 바이브 코딩과 Codex — AI에게 코드를 맡기다",
+      "summary": "카파시가 만든 '바이브 코딩'의 의미와 실제 산업 적용, 그리고 Codex를 IDE에 설치·로그인하는 실전 세팅.",
+      "pages": [99, 119],
+      "body": "에이전트의 원리를 세웠으니, 이제 그것으로 실제 코드를 만드는 '바이브 코딩'으로 넘어간다 [D1-p99]. **바이브 코딩(Vibe Coding)**이라는 말은 안드레이 카파시가 2025년 2월 트윗에서 처음 제안했다 [D1-p101]. 그는 '느낌에 완전히 몸을 맡기고 코드가 존재한다는 사실조차 잊는 새로운 코딩'이라며, LLM이 너무 좋아져서 음성으로 지시하고 'Accept All'만 누르며 더 이상 코드 변경 내역(diff)을 읽지 않아도 된다고 묘사했다 [D1-p101]. 한마디로 '느낌(바이브)으로 코딩한다'는 것 — 코드의 세부를 일일이 통제하지 않고 AI에게 원하는 바를 말로 전하며 감각적으로 개발하는 방식이다 [D1-p102].\n\n이것이 단순한 유행어가 아님은 산업 지표가 보여 준다. 마이크로소프트의 나델라는 자사 코드의 약 30%가 AI에 의해 작성된다고 밝혔고, 메타의 저커버그도 비슷하다고 답했다 [D1-p103]. 빅테크가 이미 코드의 20~30%를 AI에 맡기고 있는 것이다 [D1-p103]. 바이브 코딩을 실제로 하는 방법은 네 가지로 정리된다: ① ChatGPT·Gemini 같은 대표 LLM 서비스, ② 웹 기반 코딩 에이전트(Lovable·Replit·Google AI Studio 등, 즉시 배포는 쉽지만 확장성 제한), ③ AI IDE(Cursor·Windsurf 등 개발 환경에 통합된 보조형), ④ 로컬 기반 코딩 에이전트(Codex·Claude Code 등 터미널에서 도는 자율 실행형으로 확장성이 강력) [D1-p104][D1-p105]. 이 강의가 다루는 Codex·Claude Code는 네 번째, 로컬 자율 실행형에 해당한다 [D1-p104].\n\n실습 도구로 Codex를 고른 이유는 실용적이다. Claude Code가 주가까지 흔들 만큼 화제지만 [D1-p108], **ChatGPT 유료 구독자라면 별도 결제 없이 그와 거의 유사한 OpenAI Codex를 쓸 수 있기** 때문이다 [D1-p109]. Codex는 복잡한 지시를 이해하고 → 계획하고 → 컴퓨터를 직접 실행하고 → 결과를 검증하는 소프트웨어 엔지니어링 에이전트로, 코딩뿐 아니라 논문 분석·데이터 분석·문서 작성 등 컴퓨터로 하는 일 전반에 적용된다 [D1-p110]. 어려운 CLI(명령줄) 대신, 구글이 VS Code를 fork해 만든 Antigravity IDE에 OpenAI Codex 확장을 붙여 쉽게 쓰는 방식을 택한다 [D1-p111][D1-p112]. 사전 준비물은 Python·Node.js·Git·Antigravity IDE이고 [D1-p113], IDE의 확장 마켓에서 'openai codex'를 검색해 설치한 뒤 'Sign in with ChatGPT'로 로그인하면 된다 [D1-p115][D1-p116]. 입력창에서는 폴더 맥락 사용 여부, 계획(Plan) 모드, 추론량, 권한 범위, 사용 모델 다섯 가지를 조절할 수 있는데, 계획을 먼저 검토하고 실행 권한을 제한하면 에이전트가 의도치 않은 작업을 하는 것을 줄일 수 있다 [D1-p117].",
+      "key_points": [
+        "바이브 코딩은 카파시가 만든 말로, 코드 세부를 통제하지 않고 AI에게 '느낌'으로 지시하는 개발 방식이다 [D1-p101][D1-p102].",
+        "MS·메타는 이미 코드의 20~30%를 AI로 작성한다 [D1-p103].",
+        "ChatGPT 유료 구독자는 별도 결제 없이 Codex를 쓸 수 있어, 이 강의는 Codex를 실습 도구로 택했다 [D1-p109].",
+        "Codex는 어려운 CLI 대신 Antigravity IDE + Codex 확장으로 쉽게 설치·로그인해 쓴다 [D1-p112][D1-p116]."
+      ]
+    },
+    {
+      "id": "ch06",
+      "title": "6장. 에이전트를 확장하다 — MCP와 Skills",
+      "summary": "AI를 외부 도구에 '연결'하는 MCP와, 특정 작업 방법을 '가르치는' Skills. 에이전트 능력을 넓히는 두 축.",
+      "pages": [120, 154],
+      "body": "설치한 Codex를 더 강력하게 만들려면, 에이전트의 능력을 확장하는 두 축 — MCP와 Skills — 를 알아야 한다 [D1-p120]. **MCP(Model Context Protocol)**는 LLM을 외부 시스템에 연결하기 위한 오픈소스 표준이다 [D1-p123]. 발표자는 이를 'AI 세계의 USB-C'에 비유한다 — USB-C 포트 하나로 여러 기기를 꽂듯, MCP라는 표준 하나로 AI가 파일·데이터베이스·검색 엔진 등 다양한 외부 도구에 연결된다는 것이다 [D1-p122][D1-p123]. 이를 통해 AI가 캘린더·Notion과 연결되어 비서처럼 일하고, Figma 디자인으로 웹앱을 만들고, 사내 DB를 분석하고, Blender로 3D를 만들어 출력하는 일까지 가능해진다 [D1-p124]. 구조상 MCP는 호스트(지휘하는 AI 앱)·클라이언트(서버와 통신하는 창구)·서버(도구·데이터를 제공하는 쪽)의 세 요소로 이뤄지고 [D1-p125], 이들은 초기화 → 검색(tools/list) → 실행(tools/call) → 알림이라는 정해진 대화 규약으로 통신한다 [D1-p126]. 여러 서버를 함께 부리는 힘도 크다 — '바르셀로나 여행 계획' 한 마디로 AI 호스트가 여행·날씨·캘린더 서버를 동시에 조율해 항공·호텔 예약, 날씨 확인, 일정 등록, 메일 발송을 몇 분 만에 끝낸다 [D1-p127]. 실제로는 ChatGPT의 커넥터로 Gmail·Drive를 붙이거나 [D1-p128], Codex CLI에서 filesystem MCP를 등록해 로컬 파일을 다루게 하거나 [D1-p129], Smithery 같은 마켓플레이스에서 원하는 서버를 골라 연결할 수 있다 [D1-p130].\n\n두 번째 축은 Skills다. **Agent Skills**는 에이전트의 기능을 확장하는 '가볍고 개방적인 포맷'으로, 특정 작업을 정확히 수행하는 데 필요한 지침·스크립트·리소스를 담은 정리된 파일 폴더다 [D1-p135]. MCP가 'AI를 외부 도구에 연결'하는 것이라면, Skill은 'AI에게 특정 작업 방법을 폴더 형태로 가르쳐 주는 설명서 묶음'에 가깝다 [D1-p135]. 핵심 원리는 **점진적 공개(Progressive Disclosure)**다 — 수백 개 skill의 전체 내용을 매번 다 넣으면 토큰(모델이 한 번에 처리하는 정보량)이 폭발하므로, 항상 로드되는 메타데이터(이름·설명), 트리거될 때 로드되는 본문 지침, 필요할 때만 로드되는 리소스의 3단계로 나눠 필요한 만큼만 꺼내 쓴다 [D1-p139][D1-p140].\n\nSkill의 구조는 단순하다. 최소한 SKILL.md 하나면 되고, 이 파일은 맨 위 메타데이터 영역(Frontmatter)과 그 아래 본문(Body)으로 나뉜다 [D1-p141]. Frontmatter의 name과 description은 필수인데, 특히 description은 '무엇을 하고 언제 쓰는지'를 담아야 한다 — 에이전트가 수많은 skill 중 상황에 맞는 것을 스스로 골라 부르는 판단 근거가 바로 이 설명글이기 때문이다 [D1-p142]. 본문은 형식 제약이 없지만 단계별 지침과 입출력 예시를 담고 500줄 이하로 유지하길 권하며, 필요하면 scripts·references·assets 폴더를 덧붙인다 [D1-p143][D1-p144]. 이런 방식이 필요해진 배경은 '범용 에이전트'의 등장이다 — 과거엔 작업마다 전용 에이전트를 따로 만들었지만, 이제는 코드가 보편 인터페이스가 되어 bash와 파일시스템만 갖춘 하나의 범용 에이전트가 다양한 작업을 처리하며, 다만 안정적 수행에 필요한 문맥과 도메인 전문성을 Skill이 채워 준다 [D1-p145][D1-p146]. Skill은 여러 에이전트 제품에서 그대로 재사용되는 개방형 표준(portable)이자, 여러 개를 파이프라인처럼 이어 붙일 수 있는 조합 가능(composable)한 것이며 [D1-p148][D1-p149], .codex/skills/ 폴더에 담아 두거나 채팅으로 만들어 달라 요청하거나 남의 GitHub 스킬을 git clone으로 가져와 쓸 수 있다 [D1-p150][D1-p151][D1-p154].",
+      "key_points": [
+        "MCP는 'AI의 USB-C' — 하나의 표준으로 AI를 파일·서비스·도구 등 외부 시스템에 연결한다 [D1-p123].",
+        "MCP는 호스트·클라이언트·서버 구조이며, 여러 서버를 동시에 조율(오케스트레이션)해 복잡한 일을 처리한다 [D1-p125][D1-p127].",
+        "Skill은 지침·스크립트를 폴더로 묶어 에이전트에게 '작업 방법'을 가르치며, 점진적 공개로 토큰을 아낀다 [D1-p135][D1-p139].",
+        "MCP가 '연결'이라면 Skill은 '작업 방법 제공' — 역할이 다르다 [D1-p123][D1-p135]."
+      ]
+    },
+    {
+      "id": "ch07",
+      "title": "7장. 만든 것을 세상에 올리기 — 바이브코딩을 위한 IT 기초",
+      "summary": "클라이언트·서버·네트워크·DB·API·배포·Git까지, 무언가를 만들어 인터넷에 올리는 데 필요한 최소 공통 언어.",
+      "pages": [155, 174],
+      "body": "바이브 코딩으로 무언가를 만들려면 최소한의 IT 공통 언어가 필요하다 [D1-p155]. 이 단원은 클라이언트/서버, 네트워크·인터넷, DB, API, 배포, Git/GitHub를 차례로 다루는데, 이들은 웹 서비스가 만들어져 인터넷에 올라가 동작하는 전 과정을 이루는 뼈대다 [D1-p156]. **클라이언트**는 내가 직접 쓰는 기기(내가 보는 화면이 실행되는 쪽)이고, **서버**는 보이지 않는 곳에서 요청을 대신 처리하는, 24시간 켜진 컴퓨터다 [D1-p157]. 이 둘 사이의 기본 원리는 '요청(Request)-응답(Response)' — 클라이언트가 요청을 보내면 서버가 처리해 결과를 돌려준다 [D1-p158]. 도메인을 입력하면 먼저 DNS로 그 이름의 실제 IP 주소를 조회한 뒤(도메인은 사람이 읽는 이름표, IP는 컴퓨터가 쓰는 실제 주소, DNS는 그 둘을 잇는 전화번호부), 알아낸 IP의 서버에 요청해 데이터를 받아오는 것이 웹 로딩의 전체 흐름이다 [D1-p159].\n\n우리가 쓸 수 있는 서버는 두 부류다 [D1-p160]. 가볍게는 GitHub Pages·Netlify·Vercel·Replit 같은 호스팅 서비스가 있고(대개 Git push로 자동 배포되며, 정적 사이트나 서버리스 함수를 지원), 크게는 AWS·GCP·Azure 같은 클라우드 인프라가 있다 [D1-p160][D1-p161]. 로컬(내 컴퓨터)에서 완성한 프로젝트는 '이 프로젝트를 가볍게 배포하고 싶은데 방법을 추천해 줘'처럼 프롬프트로 물어 배포를 안내받을 수 있다 [D1-p162].\n\n데이터가 필요한 서비스라면 **데이터베이스(DB)**가 등장한다. DB는 앱의 모든 '기억'(사용자 정보·게시글·주문 등)을 저장하는 곳으로, 엑셀과 비슷하게 테이블(시트)·컬럼(열)·행(한 줄)의 구조를 가진다 [D1-p163]. Firebase·Supabase·Railway·Render 같은 서비스가 DB와 백엔드를 함께 제공하며, 데이터 성격(유연한 NoSQL이냐, 표와 관계로 엄격한 SQL이냐)에 따라 골라 쓴다 [D1-p164]. 서로 다른 프로그램을 잇는 통신 규칙은 **API(Application Programming Interface)**다 — 클라이언트·서버·DB나 서비스들 사이를 약속된 방식으로 연결하는 통신 규칙으로 [D1-p165], 그 기본 동작은 생성·조회·수정·삭제(CRUD)가 각각 POST·GET·PUT/PATCH·DELETE 메소드에 대응하는 것이다 [D1-p166]. API는 항상 요청 → 응답 구조로 작동하며, 응답은 흔히 키와 값을 짝지은 JSON 형식으로 온다 [D1-p167]. API를 쓸 권한을 증명하는 비밀 열쇠가 **API Key**인데, 유출되면 남이 내 키로 요금 폭탄을 낼 수 있으니 반드시 비밀로 관리해야 한다 [D1-p168].\n\n마지막은 배포와 협업 도구다. **배포(Deployment)**는 개발한 코드를 서버에 올려 누구나 URL로 접속할 수 있게 만드는 과정이다 [D1-p171]. **Git**은 파일 변경 이력을 기록·관리하는 버전 관리 도구이고, **GitHub**는 그 코드를 올려 두고 협업하는 온라인 저장소다 [D1-p172]. 저장소(Repository)·버전 저장(Commit)·업로드(Push)·다운로드(Pull)가 그 기초 개념이며 [D1-p173], 간편 호스팅 대부분이 GitHub 코드를 바탕으로 서비스를 띄우므로 배포하려면 GitHub 세팅이 사실상 출발점이 된다 [D1-p174].",
+      "key_points": [
+        "웹의 기본 원리는 클라이언트의 요청 → 서버의 응답이며, 도메인은 DNS로 IP를 조회한 뒤 서버에 접속한다 [D1-p158][D1-p159].",
+        "API는 프로그램끼리 데이터를 주고받는 통신 규칙으로, CRUD가 POST·GET·PUT/PATCH·DELETE에 대응한다 [D1-p165][D1-p166].",
+        "API Key는 유출 시 요금 폭탄 위험이 있어 반드시 비밀로 관리해야 한다 [D1-p168].",
+        "배포는 코드를 서버에 올려 URL로 공개하는 것이며, 간편 호스팅 대부분이 GitHub를 출발점으로 삼는다 [D1-p171][D1-p174]."
+      ]
+    },
+    {
+      "id": "ch08",
+      "title": "8장. 컨텍스트 엔지니어링과 Codex 실전 운용",
+      "summary": "무엇을 AI에 쥐어줄지 설계하는 컨텍스트 엔지니어링(AGENT.md·Sub-Agent), 로컬 LLM, 그리고 Codex의 안전·프롬프팅 실전.",
+      "pages": [175, 205],
+      "body": "프롬프트 엔지니어링이 'AI에게 어떻게 지시할 것인가(How to ask)'라면, **컨텍스트 엔지니어링**은 'AI에게 무엇을 쥐어줄 것인가(What to provide)'를 다룬다 [D1-p176]. 비유하자면 프롬프트 엔지니어링은 신입사원에게 업무를 명확히 지시하는 말하기 기술이고, 컨텍스트 엔지니어링은 그 신입이 일할 수 있도록 사내 문서·권한·업무 툴을 세팅해 주는 온보딩 시스템이다 [D1-p176]. 이것이 중요해진 배경은 에이전트다 — AI Agent를 만들면서 시스템 프롬프트, 도구 정보, MCP 정보, 코드베이스·문서 등 LLM에 넣어야 할 입력이 폭증했기 때문이다 [D1-p177]. 클로드코드 개발자 Thariq조차 'Agent 개발에서 가장 어렵고 중요한 것은 모델 성능이 아니라 컨텍스트 설계'라고 말한다 [D1-p178].\n\n이를 돕는 도구가 세 가지다: Skills(점진적 공개로 컨텍스트 절약), AGENT.md(시스템 프롬프트 정의), Sub-Agent(별도 시스템 프롬프트를 가진 하위 에이전트) [D1-p179]. **AGENTS.md**는 AI 코딩 에이전트에게 프로젝트별 지침을 주는 문서로, 사람 개발자를 위한 README.md의 AI 버전에 해당한다 [D1-p180]. 지침은 '더 가까울수록, 더 구체적일수록 강하다'는 원칙으로 누적되고, 같은 위치에서는 override 파일이 우선하며, 지침을 못 찾을 때 쓰는 fallback도 지정할 수 있다 [D1-p181][D1-p182]. GitHub이 2,500개 이상 레포를 분석해 정리한 요령은, 실행 명령어를 앞에 두고 코드 스니펫으로 좋은 출력을 보여 주며, AI가 건드리면 안 되는 금지 영역(Boundaries)을 명시하고, 의존성 버전까지 구체적으로 적으라는 것이다 [D1-p183].\n\n**Sub-Agent**는 독립된 컨텍스트 창과 도구 권한을 가진 전문화된 AI 어시스턴트로, 메인 에이전트가 '팀장'이라면 서브에이전트는 각자 역할을 맡은 '팀원'과 같다 [D1-p184]. 무거운 작업을 분리해 메인 대화의 정보 과부하를 막고(컨텍스트 보존), 도구를 제한하고, 여러 프로젝트에서 재사용하고, 특정 도메인에 전문화할 수 있다는 네 가지 이점이 있다 [D1-p185]. YAML 프론트매터와 시스템 프롬프트로 된 마크다운 파일로 정의하거나 /agents 명령으로 쉽게 만들며, 요청 맥락과 description을 비교하는 자동 위임 또는 이름을 직접 부르는 명시적 호출로 발동된다 [D1-p186][D1-p187][D1-p188]. 요컨대 Sub-Agent는 '누가(독립 일꾼) 하느냐', Skill은 '어떻게(전문 지식) 하느냐'에 해당한다 [D1-p190].\n\n클라우드 대신 내 PC에서 모델을 돌리고 싶다면 **Ollama**로 로컬 LLM을 쓸 수 있는데, 이때는 반드시 도구 호출이 가능한 'Tools' 기능 모델을 골라야 코딩 에이전트로 쓸 수 있다 [D1-p193][D1-p194]. VS Code 계열 IDE에 Roo Code 확장을 설치하고 API Provider를 Ollama로, 모델을 내려받은 것으로 지정해 저장하면 Codex처럼 로컬 모델로 코딩 작업을 지시할 수 있다 [D1-p195][D1-p196][D1-p197]. 끝으로 Codex 자체의 실전 운용을 짚는다. 동작은 설정 파일 config.toml(~/.codex/config.toml)에서 모델·추론 깊이·승인 모드·샌드박스 등을 조정하는데 [D1-p199], 특히 안전 설정이 중요하다 — approval_mode는 명령 실행 전 언제 허락을 구할지(untrusted/on-failure/on-request/never)를, sandbox_mode는 어떤 파일을 읽고 쓸 수 있는지(read-only/workspace-write/danger-full-access)를 정하며 기본값은 on-request와 workspace-write다 [D1-p200]. 프롬프팅 요령으로는 @mention으로 코드 위치를 콕 집고, 검증 단계를 포함하고, 큰 작업 전 작은 작업부터 시작하고, 디버깅 때 전체 스택 트레이스를 붙여넣으라고 권한다 [D1-p201]. 코드베이스 설명·테스트 확장·버그 수정·리팩터링이 대표적 첫 작업이고 [D1-p202], Mermaid 시퀀스 다이어그램으로 코드 흐름을 도식화할 수도 있다 [D1-p203]. CLI로는 npm install -g @openai/codex로 설치하며, /rewind가 없어 되돌리기는 git으로 하고 /compact·/clear로 컨텍스트를 관리한다 [D1-p204][D1-p205].",
+      "key_points": [
+        "컨텍스트 엔지니어링은 'AI에게 무엇을 쥐어줄지' 설계하는 일로, 에이전트 시대에 모델 성능보다 중요해졌다 [D1-p176][D1-p178].",
+        "AGENTS.md는 AI용 README이며 '가까울수록·구체적일수록 강하다'는 우선순위 원칙을 따른다 [D1-p180][D1-p181].",
+        "Sub-Agent는 독립 컨텍스트를 가진 '팀원', Skill은 '전문 지식' — 하나는 누가, 하나는 어떻게에 해당한다 [D1-p184][D1-p190].",
+        "Codex의 안전은 approval_mode(승인 시점)와 sandbox_mode(파일 접근 범위)로 제어하며 기본값은 on-request·workspace-write다 [D1-p200]."
+      ]
+    },
+    {
+      "id": "ch09",
+      "title": "9장. 직접 만들어 보기 — 바이브코딩 프로젝트",
+      "summary": "배운 것을 모아 작은 웹/앱을 스스로 만들어 보는 마무리 실습.",
+      "pages": [206, 209],
+      "body": "긴 여정의 끝은 직접 만들어 보는 것이다 [D1-p206]. 수강생은 그날 배운 내용을 바탕으로 나만의 작은 웹/앱 프로젝트를 만든다 [D1-p207]. 완벽한 기능을 완성하기보다 **아이디어를 빠르게 형태로 만들어 보는 경험** 자체가 핵심 목표다 — 이것이 바로 앞에서 배운 바이브 코딩의 정신이다 [D1-p207][D1-p102]. 주제 선정이나 구체화가 막힌다면 ChatGPT의 도움을 받아 진행하고, 다른 사람들의 사례를 참고 링크나 웹 검색으로 살펴보라고 권한다 [D1-p208]. 완성한 결과물은 안내된 패들릿(Padlet)에 공유하며 강의를 마무리한다 [D1-p207][D1-p209].",
+      "key_points": [
+        "마무리 실습은 배운 것을 모아 작은 웹/앱을 직접 만들어 보는 것이다 [D1-p207].",
+        "완성도보다 '아이디어를 빠르게 형태로 만드는 경험'이 목표 — 바이브 코딩의 정신 그대로다 [D1-p207]."
+      ]
+    }
+  ],
+  "epilogue": "이 강의의 여정은 하나의 문장으로 요약된다 — 'AI에게 일을 잘 시키는 법'에서 'AI에게 직접 만들게 하는 법'까지 [D1-p1][D1-p7]. 프롬프트 엔지니어링으로 지시하는 법을 익히고, 확률적 언어 모델의 한계와 사내 보안을 이해하고, 에이전트가 스스로 도구를 쓰는 원리를 세운 뒤, Codex로 코드를 만들고, MCP·Skills·컨텍스트 엔지니어링으로 그 에이전트를 확장·제어하며, IT 기초로 만든 것을 세상에 올리는 것 — 이 모든 단계가 결국 '컴퓨터에게 말로 일을 잘 시키는 일'이라는 한 축으로 꿰어진다 [D1-p8][D1-p176]. (배경지식) 실천을 위한 제안은 단순하다. 첫째, 회사 자료를 AI에 넣기 전 요금제별 데이터 정책을 반드시 확인하라 [D1-p32]. 둘째, 좋은 프롬프트의 네 원칙(명확·역할·예시·구조화)을 몸에 익히고, 어려우면 Prompt Generator에 위임하라 [D1-p25][D1-p23]. 셋째, Codex를 설치해 작은 작업부터 시작하고, 계획 모드와 샌드박스로 안전하게 실행 권한을 통제하라 [D1-p117][D1-p200]. 넷째, 무엇보다 직접 작은 프로젝트를 만들어 보라 — 완성도가 아니라 시도가 목적이다 [D1-p207]. AI 직무가 프롬프트 엔지니어에서 바이브 코더, 에이전트 마스터로 해마다 바뀌는 시대에 [D1-p70], 변치 않는 것은 '도구가 무엇으로 바뀌든, AI에게 일을 잘 시키는 사람이 앞서간다'는 사실이다 [D1-p7]."
+}
+;
+</script>
+<script>
+(function(){
+  var D = window.NOTE_DATA;
+
+  // ---- 간단 인라인 렌더: HTML 이스케이프 → **굵게** → 인용 배지 → 마커 ----
+  function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function inline(s){
+    s = esc(s);
+    s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    // 인용 태그 [D1-p7] → 슬라이드 해설 딥링크 배지
+    s = s.replace(/\[D(\d+)-p(\d+)\]/g,
+      '<a class="cite" href="index.html#d$1p$2" title="슬라이드 D$1-p$2로 이동">D$1·p$2</a>');
+    // (배경지식)/(모델 지식) 회색 배지
+    s = s.replace(/\((배경지식|모델 지식)\)/g, '<span class="mk">$1</span>');
+    return s;
+  }
+  // ---- 문단/목록 마크다운 ----
+  function markdown(body){
+    return body.split(/\n\n+/).map(function(block){
+      var lines = block.split('\n');
+      var allItems = lines.every(function(l){return l.trim().indexOf('- ')===0;});
+      if(allItems && lines.length){
+        return '<ul>'+lines.map(function(l){
+          return '<li>'+inline(l.trim().slice(2))+'</li>';
+        }).join('')+'</ul>';
+      }
+      return '<p>'+inline(block.replace(/\n/g,' '))+'</p>';
+    }).join('');
+  }
+
+  // ---- 히어로 ----
+  var titleParts = D.title.split(/\s*—\s*/);
+  var mainT = titleParts[0];
+  var subT = titleParts.slice(1).join(' — ');
+  document.getElementById('heroTitle').innerHTML =
+    esc(mainT) + (subT ? '<span class="sub">'+esc(subT)+'</span>' : '');
+  document.getElementById('heroMeta').innerHTML =
+    '<span class="chip">강사 <b>엄광호</b></span>' +
+    '<span class="chip">읽기 시간 <b>'+esc(D.reading_time)+'</b></span>' +
+    '<span class="chip">본편 <b>슬라이드 209장 · '+D.chapters.length+'개 장</b></span>';
+
+  // ---- 본문 조립 ----
+  var html = '';
+
+  // 프롤로그
+  html += '<section class="block" id="prologue">'
+       +  '<div class="essay prologue">'
+       +  '<span class="etag">PROLOGUE · 들어가며</span>'
+       +  markdown(D.prologue)
+       +  '</div></section>';
+
+  // 장 목차
+  html += '<section class="toc-wrap" id="toc">'
+       +  '<div class="kicker"><span class="no">목차 /</span> 이 노트의 흐름</div>'
+       +  '<h2 class="title">아홉 개의 장으로 다시 엮은 학습 여정</h2>'
+       +  '<div class="toc-grid">';
+  D.chapters.forEach(function(ch, i){
+    var no = String(i+1).padStart(2,'0');
+    html += '<a class="toc-item" href="#'+ch.id+'">'
+         +  '<div class="tc-no">'+no+'</div>'
+         +  '<div><div class="tc-title">'+esc(ch.title)+'</div>'
+         +  '<div class="tc-sum">'+esc(ch.summary)+'</div></div>'
+         +  '<div class="tc-pg">p'+ch.pages[0]+'–'+ch.pages[1]+'</div>'
+         +  '</a>';
+  });
+  html += '</div></section>';
+
+  // 각 장
+  D.chapters.forEach(function(ch, i){
+    var no = String(i+1).padStart(2,'0');
+    html += '<section class="block chapter" id="'+ch.id+'">'
+         +  '<div class="kicker"><span class="no">'+no+' /</span> 슬라이드 '+ch.pages[0]+'–'+ch.pages[1]+'</div>'
+         +  '<h2 class="title">'+esc(ch.title)+'</h2>'
+         +  '<p class="summary">'+esc(ch.summary)+'</p>'
+         +  '<div class="body">'+markdown(ch.body)+'</div>';
+    if(ch.key_points && ch.key_points.length){
+      html += '<div class="keypts"><div class="kt">이 장의 핵심</div><ul>'
+           +  ch.key_points.map(function(k){return '<li>'+inline(k)+'</li>';}).join('')
+           +  '</ul></div>';
+    }
+    html += '<a class="toslides" href="index.html#d1p'+ch.pages[0]+'">'
+         +  '이 구간 슬라이드로 보기 <span class="arw">→</span></a>';
+    html += '</section>';
+  });
+
+  // 에필로그
+  html += '<section class="block" id="epilogue">'
+       +  '<div class="essay epilogue">'
+       +  '<span class="etag">EPILOGUE · 나가며</span>'
+       +  markdown(D.epilogue)
+       +  '</div></section>';
+
+  document.getElementById('content').innerHTML = html;
+
+  // ---- 사이드 진행 네비 구성 ----
+  var navItems = [
+    {id:'prologue', lb:'프롤로그'},
+    {id:'toc', lb:'목차'}
+  ];
+  D.chapters.forEach(function(ch,i){
+    navItems.push({id:ch.id, lb:String(i+1)+'장'});
+  });
+  navItems.push({id:'epilogue', lb:'에필로그'});
+  var sidenav = document.getElementById('sidenav');
+  sidenav.innerHTML = navItems.map(function(n){
+    return '<a href="#'+n.id+'"><span class="dot"></span><span class="lb">'+n.lb+'</span></a>';
+  }).join('');
+
+  // ---- 스크롤: 진행바 + 활성 점 ----
+  var secs = navItems.map(function(n){return document.getElementById(n.id);});
+  var links = [].slice.call(sidenav.querySelectorAll('a'));
+  window.addEventListener('scroll', function(){
+    var h = document.documentElement;
+    document.getElementById('progress').style.width =
+      (h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+    var cur = 0;
+    secs.forEach(function(s,i){
+      if(s && s.getBoundingClientRect().top < window.innerHeight*0.4) cur = i;
+    });
+    links.forEach(function(a,i){a.classList.toggle('on', i===cur);});
+  }, {passive:true});
+})();
+</script>
+</body>
+</html>

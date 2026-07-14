@@ -26,6 +26,16 @@ button{font-family:inherit; cursor:pointer}
 }
 .brand h1{font-size:19px}
 .subtitle{margin:0; color:var(--muted); font-size:13px}
+/* ---- 상단 이동(허브 복귀 + 노트 모드 전환) ---- */
+.site-crumbs{display:flex; gap:8px; margin-bottom:6px; flex-wrap:wrap}
+.crumb{
+  font-size:12px; color:var(--muted); text-decoration:none;
+  border:1px solid var(--line); border-radius:999px; padding:3px 12px;
+  background:var(--bg); transition:all .18s; white-space:nowrap;
+}
+.crumb:hover{color:var(--ink); border-color:var(--muted)}
+.crumb-note{color:var(--accent); border-color:var(--accent)}
+.crumb-note:hover{background:var(--accent); color:#fff; border-color:var(--accent)}
 .tabs{display:flex; gap:6px}
 .tab{
   border:1px solid var(--line); background:var(--bg); color:var(--muted);

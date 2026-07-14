@@ -42,10 +42,8 @@ h1{font-family:var(--serif);font-size:clamp(28px,5vw,42px);font-weight:700;line-
 main{flex:1;padding:40px 0 64px}
 .list{display:flex;flex-direction:column;gap:18px}
 .card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:14px;
-  padding:26px 28px;transition:border-color .15s, background .15s, transform .15s}
-.card:hover{background:var(--panel-2);border-color:var(--amber);transform:translateY(-2px)}
-.card.pending{opacity:.65;cursor:default}
-.card.pending:hover{background:var(--panel);border-color:var(--line);transform:none}
+  padding:26px 28px;transition:border-color .15s, background .15s}
+.card:hover{background:var(--panel-2);border-color:rgba(245,165,36,.45)}
 .card-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
 .num{font-family:var(--mono);font-size:13px;color:var(--faint)}
 .card h2{font-family:var(--serif);font-size:21px;font-weight:700}
@@ -58,8 +56,16 @@ main{flex:1;padding:40px 0 64px}
 .feat span{font-family:var(--mono);font-size:11.5px;color:var(--cyan);
   background:rgba(57,208,195,.07);border:1px solid rgba(57,208,195,.22);
   border-radius:6px;padding:2px 8px}
-.go{margin-top:14px;font-size:13.5px;color:var(--amber)}
-.card:hover .go{text-decoration:underline}
+
+/* 모드별 진입 버튼 */
+.modes{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.mode{display:inline-block;font-size:13.5px;color:var(--amber);
+  border:1px solid rgba(245,165,36,.35);border-radius:9px;padding:8px 16px;
+  transition:background .15s, border-color .15s}
+.mode:hover{background:rgba(245,165,36,.1);border-color:var(--amber)}
+.mode.note{color:var(--cyan);border-color:rgba(57,208,195,.35)}
+.mode.note:hover{background:rgba(57,208,195,.08);border-color:var(--cyan)}
+.mode-hint{font-size:12px;color:var(--faint);margin-top:10px}
 
 /* ============ 푸터 ============ */
 footer{border-top:1px solid var(--line);padding:22px 0 34px;color:var(--faint);font-size:12.5px}
@@ -73,7 +79,7 @@ footer a{color:var(--dim);text-decoration:underline}
     <div class="eyebrow">Seminar Analysis Archive</div>
     <h1>세미나 해설 아카이브</h1>
     <p class="sub">세미나·강의 발표자료를 슬라이드 단위로 분석해 만든 <b>인터랙티브 해설 웹페이지</b> 모음입니다.
-    각 페이지는 출처 슬라이드 인용, 핵심 개념 풀이, 검색, 큰 흐름 지도를 제공합니다.</p>
+    <b>🎞️ 슬라이드 해설</b>은 슬라이드를 넘기며 탐색하는 모드, <b>📖 강의 노트</b>는 처음부터 끝까지 이어 읽는 모드입니다.</p>
   </div>
 </header>
 
@@ -81,7 +87,7 @@ footer a{color:var(--dim);text-decoration:underline}
   <div class="wrap">
     <div class="list">
 
-      <a class="card" href="01_fable_강의분석_Data-Centeric%20AI/index.html">
+      <div class="card">
         <div class="card-top">
           <span class="num">01</span>
           <h2>Data-Centric AI 연구</h2>
@@ -89,10 +95,12 @@ footer a{color:var(--dim);text-decoration:underline}
         </div>
         <p>ETRI 우수논문 특강 — 모델이 아니라 데이터를 개선해 AI 성능을 끌어올리는 연구 흐름을 단일 페이지 강의 노트로 정리.</p>
         <div class="feat"><span>인터랙티브 노트</span><span>개념 풀이</span></div>
-        <div class="go">읽으러 가기 →</div>
-      </a>
+        <div class="modes">
+          <a class="mode note" href="01_fable_강의분석_Data-Centeric%20AI/index.html">📖 강의 노트</a>
+        </div>
+      </div>
 
-      <a class="card" href="02_강의분석-(이종률)경량AI/webpage/index.html">
+      <div class="card">
         <div class="card-top">
           <span class="num">02</span>
           <h2>AI 모델 경량화 (이종률 교수)</h2>
@@ -100,10 +108,13 @@ footer a{color:var(--dim);text-decoration:underline}
         </div>
         <p>2일 세미나 467개 슬라이드 전체 해설 — 프루닝·양자화·지식 증류 등 경량화 기법의 계보를 슬라이드 인용과 함께 추적.</p>
         <div class="feat"><span>슬라이드 뷰</span><span>검색</span><span>Q&amp;A</span><span>⭐ 강조</span><span>🧭 연구 흐름</span><span>🎙️ 강의 실황</span><span>참고문헌</span></div>
-        <div class="go">읽으러 가기 →</div>
-      </a>
+        <div class="modes">
+          <a class="mode" href="02_강의분석-(이종률)경량AI/webpage/index.html">🎞️ 슬라이드 해설</a>
+          <a class="mode note" href="02_강의분석-(이종률)경량AI/webpage/note.html">📖 강의 노트</a>
+        </div>
+      </div>
 
-      <a class="card" href="03_PE%20%26%20Vibe%20Coding/webpage/index.html">
+      <div class="card">
         <div class="card-top">
           <span class="num">03</span>
           <h2>PE &amp; Vibe Coding (엄광호)</h2>
@@ -111,8 +122,11 @@ footer a{color:var(--dim);text-decoration:underline}
         </div>
         <p>프롬프트 엔지니어링과 바이브 코딩 교안 209슬라이드 전체 해설 — AI에게 잘 지시하는 법부터 AI로 직접 만들어 배포하기까지, 실무 흐름을 슬라이드 인용·개념 사전과 함께 정리.</p>
         <div class="feat"><span>슬라이드 뷰</span><span>검색</span><span>Q&amp;A</span><span>📚 개념 사전</span><span>⭐ 강조</span><span>🧭 학습 흐름</span><span>참고문헌</span></div>
-        <div class="go">읽으러 가기 →</div>
-      </a>
+        <div class="modes">
+          <a class="mode" href="03_PE%20%26%20Vibe%20Coding/webpage/index.html">🎞️ 슬라이드 해설</a>
+          <a class="mode note" href="03_PE%20%26%20Vibe%20Coding/webpage/note.html">📖 강의 노트</a>
+        </div>
+      </div>
 
     </div>
   </div>

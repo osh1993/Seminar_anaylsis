@@ -65,3 +65,10 @@ Python 스크립트로 `_workspace/01_extract_*.json` + `02_interpret_*.json` + 
 - data.js의 슬라이드 수 = `01_extract_day*.json` 슬라이드 수 합계 (현재 467 = day1 221 + day2 246).
 - `node --check app.js && node --check data.js` (node 없으면 생략하고 보고).
 - 인용 태그 원본 수 = 변환 후 링크 수 (Python으로 카운트 대조).
+
+---
+
+# 상단 네비게이션 + 📖 강의 노트 모드 (추가 명세)
+
+- **"← 세미나 목록" 허브 복귀 링크**를 헤더에 상시 표시한다 (`../../index.html`). 모드 전환 링크(슬라이드 해설 `index.html` ↔ 강의 노트 `note.html`)도 함께.
+- **note.html**: `_workspace/09_note.json`을 렌더한 단일 파일(스타일·구성은 루트 스킬 `../../.claude/skills/webpage-build/SKILL.md`의 "📖 강의 노트 모드" 절 준수). 인용 태그 [D{d}-p{n}]는 `index.html#d{d}p{n}` 링크로 변환.
