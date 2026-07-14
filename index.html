@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seminar Analysis — 세미나 해설 아카이브</title>
+<meta name="description" content="세미나·강의 발표자료를 분석해 만든 인터랙티브 해설 웹페이지 모음">
+<style>
+/* ============ 디자인 토큰 (01 산출물 계승) ============ */
+:root{
+  --ink:#0b0e13;          /* 페이지 배경 */
+  --panel:#12161e;        /* 카드 배경 */
+  --panel-2:#171c26;      /* 카드 hover */
+  --line:#252c3a;         /* 경계선 */
+  --paper:#ece7d8;        /* 본문(따뜻한 종이색) */
+  --dim:#9aa3b2;          /* 보조 텍스트 */
+  --faint:#6b7484;        /* 흐린 텍스트 */
+  --amber:#f5a524;        /* 주 강조 */
+  --coral:#ff6b4a;        /* 보조 강조 */
+  --cyan:#39d0c3;         /* 데이터 강조 */
+  --green:#7ec97e;
+  --sans:'Pretendard Variable', Pretendard, 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+  --serif:'Gowun Batang', Batang, serif;
+  --mono:'IBM Plex Mono', Consolas, monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--ink);color:var(--paper);font-family:var(--sans);line-height:1.7;
+  min-height:100vh;display:flex;flex-direction:column}
+a{color:inherit;text-decoration:none}
+
+.wrap{max-width:880px;margin:0 auto;padding:0 24px;width:100%}
+
+/* ============ 헤더 ============ */
+header{padding:72px 0 40px;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--amber);
+  text-transform:uppercase;margin-bottom:14px}
+h1{font-family:var(--serif);font-size:clamp(28px,5vw,42px);font-weight:700;line-height:1.3}
+.sub{color:var(--dim);margin-top:12px;max-width:60ch}
+.sub b{color:var(--paper);font-weight:600}
+
+/* ============ 카드 목록 ============ */
+main{flex:1;padding:40px 0 64px}
+.list{display:flex;flex-direction:column;gap:18px}
+.card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:26px 28px;transition:border-color .15s, background .15s, transform .15s}
+.card:hover{background:var(--panel-2);border-color:var(--amber);transform:translateY(-2px)}
+.card.pending{opacity:.65;cursor:default}
+.card.pending:hover{background:var(--panel);border-color:var(--line);transform:none}
+.card-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.num{font-family:var(--mono);font-size:13px;color:var(--faint)}
+.card h2{font-family:var(--serif);font-size:21px;font-weight:700}
+.badge{font-family:var(--mono);font-size:11px;padding:2px 9px;border-radius:99px;
+  border:1px solid var(--line);color:var(--dim);white-space:nowrap}
+.badge.live{color:var(--green);border-color:rgba(126,201,126,.4)}
+.badge.soon{color:var(--coral);border-color:rgba(255,107,74,.4)}
+.card p{color:var(--dim);margin-top:8px;font-size:15px}
+.feat{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.feat span{font-family:var(--mono);font-size:11.5px;color:var(--cyan);
+  background:rgba(57,208,195,.07);border:1px solid rgba(57,208,195,.22);
+  border-radius:6px;padding:2px 8px}
+.go{margin-top:14px;font-size:13.5px;color:var(--amber)}
+.card:hover .go{text-decoration:underline}
+
+/* ============ 푸터 ============ */
+footer{border-top:1px solid var(--line);padding:22px 0 34px;color:var(--faint);font-size:12.5px}
+footer a{color:var(--dim);text-decoration:underline}
+@media (max-width:560px){ header{padding:48px 0 28px} .card{padding:20px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="eyebrow">Seminar Analysis Archive</div>
+    <h1>세미나 해설 아카이브</h1>
+    <p class="sub">세미나·강의 발표자료를 슬라이드 단위로 분석해 만든 <b>인터랙티브 해설 웹페이지</b> 모음입니다.
+    각 페이지는 출처 슬라이드 인용, 핵심 개념 풀이, 검색, 큰 흐름 지도를 제공합니다.</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="list">
+
+      <a class="card" href="01_fable_강의분석_Data-Centeric%20AI/index.html">
+        <div class="card-top">
+          <span class="num">01</span>
+          <h2>Data-Centric AI 연구</h2>
+          <span class="badge live">공개 중</span>
+        </div>
+        <p>ETRI 우수논문 특강 — 모델이 아니라 데이터를 개선해 AI 성능을 끌어올리는 연구 흐름을 단일 페이지 강의 노트로 정리.</p>
+        <div class="feat"><span>인터랙티브 노트</span><span>개념 풀이</span></div>
+        <div class="go">읽으러 가기 →</div>
+      </a>
+
+      <a class="card" href="02_강의분석-(이종률)경량AI/webpage/index.html">
+        <div class="card-top">
+          <span class="num">02</span>
+          <h2>AI 모델 경량화 (이종률 교수)</h2>
+          <span class="badge live">공개 중</span>
+        </div>
+        <p>2일 세미나 467개 슬라이드 전체 해설 — 프루닝·양자화·지식 증류 등 경량화 기법의 계보를 슬라이드 인용과 함께 추적.</p>
+        <div class="feat"><span>슬라이드 뷰</span><span>검색</span><span>Q&amp;A</span><span>⭐ 강조</span><span>🧭 연구 흐름</span><span>🎙️ 강의 실황</span><span>참고문헌</span></div>
+        <div class="go">읽으러 가기 →</div>
+      </a>
+
+      <div class="card pending">
+        <div class="card-top">
+          <span class="num">03</span>
+          <h2>PE &amp; Vibe Coding</h2>
+          <span class="badge soon">분석 예정</span>
+        </div>
+        <p>프롬프트 엔지니어링과 바이브 코딩 교안 — 분석 파이프라인 실행 후 이 자리에 공개됩니다.</p>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    자료 분석·해설·웹 빌드는 Claude Code 세미나 분석 하네스로 생성 ·
+    <a href="https://github.com/osh1993/Seminar_anaylsis">GitHub 저장소</a>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# 원본 발표자료(발표자 저작물)는 공개 저장소에 게시하지 않는다
+*.pdf
+*.pptx
+*.zip
+
+# 파이프라인 중간 산출물 (감사 추적용 로컬 보존, 게시 제외)
+_workspace/
+_workspace_prev/
+
+# 강의 녹취록 원본 (해설 반영본만 webpage/data.js로 게시)
+02_강의분석-(이종률)경량AI/260702-AI모델 경량화1.md
+02_강의분석-(이종률)경량AI/260702-AI모델 경량화2.md
+02_강의분석-(이종률)경량AI/Practices/
+
+# 로컬 설정
+.claude/settings.local.json
+**/.claude/settings.local.json

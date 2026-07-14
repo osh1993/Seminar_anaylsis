@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data-Centric AI — 인터랙티브 강의 노트</title>
+<!-- 폰트: 디스플레이(고운바탕), 본문(Pretendard), 데이터(IBM Plex Mono) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+/* ============ 디자인 토큰 ============ */
+:root{
+  --ink:#0b0e13;          /* 페이지 배경 */
+  --panel:#12161e;        /* 패널 배경 */
+  --panel-2:#171c26;      /* 패널 배경(밝은 단계) */
+  --line:#252c3a;         /* 경계선 */
+  --paper:#ece7d8;        /* 본문 텍스트(따뜻한 종이색) */
+  --dim:#9aa3b2;          /* 보조 텍스트 */
+  --faint:#6b7484;        /* 흐린 텍스트 */
+  --amber:#f5a524;        /* 주 강조색 */
+  --coral:#ff6b4a;        /* 보조 강조색 */
+  --cyan:#39d0c3;         /* 데이터 강조색 */
+  --green:#7ec97e;
+  --serif:'Gowun Batang', serif;
+  --sans:'Pretendard Variable', Pretendard, sans-serif;
+  --mono:'IBM Plex Mono', monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);
+  color:var(--paper);
+  font-family:var(--sans);
+  line-height:1.75;
+  overflow-x:hidden;
+}
+/* 그래프 용지 그리드 배경 — '데이터' 테마 */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(1100px 500px at 80% -10%, rgba(245,165,36,.06), transparent 60%),
+    radial-gradient(900px 600px at -10% 30%, rgba(57,208,195,.05), transparent 60%),
+    repeating-linear-gradient(0deg, transparent 0 39px, rgba(126,140,170,.055) 39px 40px),
+    repeating-linear-gradient(90deg, transparent 0 39px, rgba(126,140,170,.055) 39px 40px);
+}
+::selection{background:rgba(245,165,36,.35)}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:var(--ink)}
+::-webkit-scrollbar-thumb{background:#2a3242;border-radius:6px}
+a{color:var(--cyan)}
+
+/* ============ 상단 진행바 + 사이드 내비 ============ */
+#progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:90;
+  background:linear-gradient(90deg,var(--amber),var(--coral));transition:width .1s}
+nav.side{
+  position:fixed;left:18px;top:50%;transform:translateY(-50%);z-index:80;
+  display:flex;flex-direction:column;gap:14px;
+}
+nav.side a{
+  display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--faint);
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;transition:color .25s;
+}
+nav.side a .dot{width:8px;height:8px;border-radius:50%;border:1.5px solid var(--faint);transition:all .25s;flex:none}
+nav.side a .lb{opacity:0;transform:translateX(-6px);transition:all .25s;white-space:nowrap}
+nav.side a:hover .lb,nav.side a.on .lb{opacity:1;transform:none}
+nav.side a.on{color:var(--amber)}
+nav.side a.on .dot{background:var(--amber);border-color:var(--amber);box-shadow:0 0 10px rgba(245,165,36,.6)}
+@media(max-width:1100px){nav.side{display:none}}
+
+/* ============ 공통 레이아웃 ============ */
+.wrap{max-width:980px;margin:0 auto;padding:0 28px;position:relative;z-index:1}
+section.block{padding:90px 0 40px}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.35em;color:var(--amber);text-transform:uppercase;margin-bottom:14px}
+.kicker .no{color:var(--faint)}
+h2.title{font-family:var(--serif);font-size:clamp(26px,4vw,38px);font-weight:700;line-height:1.35;margin-bottom:10px}
+h3.sub{font-family:var(--serif);font-size:21px;color:var(--amber);margin:46px 0 14px;display:flex;align-items:center;gap:10px}
+h3.sub::before{content:'';width:22px;height:1px;background:var(--amber);flex:none}
+p.lead{color:var(--dim);font-size:16.5px;max-width:760px}
+.note{font-size:13.5px;color:var(--faint);margin-top:8px}
+.hl{color:var(--amber);font-weight:600}
+.hl2{color:var(--cyan);font-weight:600}
+.hl3{color:var(--coral);font-weight:600}
+.mono{font-family:var(--mono)}
+
+/* 스크롤 등장 애니메이션 */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+
+/* 카드/패널 */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:26px 28px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:780px){.grid2,.grid3{grid-template-columns:1fr}}
+
+/* 용어 버튼 (클릭 → 모달) */
+.term{
+  display:inline;background:none;border:none;cursor:pointer;padding:0 2px;
+  color:var(--cyan);font:inherit;font-weight:600;
+  border-bottom:1.5px dotted var(--cyan);transition:all .2s;
+}
+.term::after{content:'＋';font-size:.7em;vertical-align:super;margin-left:1px;color:var(--amber)}
+.term:hover{color:var(--amber);border-color:var(--amber);background:rgba(245,165,36,.08)}
+
+/* 인용/출처 칩 */
+.cite{
+  display:inline-flex;align-items:center;gap:6px;margin:2px 4px 2px 0;
+  font-family:var(--mono);font-size:11px;color:var(--dim);text-decoration:none;
+  border:1px solid var(--line);border-radius:99px;padding:3px 11px;transition:all .2s;
+}
+.cite:hover{border-color:var(--amber);color:var(--amber)}
+.cite::before{content:'¶';color:var(--amber)}
+
+/* ============ 히어로 ============ */
+header.hero{min-height:92vh;display:flex;align-items:center;position:relative;z-index:1;padding:80px 0 40px}
+.hero-tag{font-family:var(--mono);font-size:12px;color:var(--cyan);letter-spacing:.3em;margin-bottom:22px;animation:fadeUp .8s .1s both}
+.hero h1{
+  font-family:var(--serif);font-weight:700;line-height:1.3;
+  font-size:clamp(34px,5.6vw,58px);animation:fadeUp .8s .25s both;
+}
+.hero h1 em{font-style:normal;color:var(--amber);position:relative;white-space:nowrap}
+.hero h1 em::after{content:'';position:absolute;left:0;right:0;bottom:6px;height:10px;background:rgba(245,165,36,.18);z-index:-1}
+.hero .sub{margin-top:24px;color:var(--dim);font-size:17px;max-width:640px;animation:fadeUp .8s .4s both}
+.hero .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px;animation:fadeUp .8s .55s both}
+.chip{font-family:var(--mono);font-size:11.5px;border:1px solid var(--line);border-radius:99px;padding:5px 14px;color:var(--dim)}
+.chip b{color:var(--paper);font-weight:500}
+/* 히어로: 데이터 → 모델 흐름 애니메이션 */
+.flow{margin-top:54px;display:flex;align-items:center;gap:0;animation:fadeUp .8s .7s both;flex-wrap:wrap}
+.flow .node{
+  font-family:var(--mono);font-size:12.5px;border:1px solid var(--line);background:var(--panel);
+  padding:12px 18px;border-radius:10px;color:var(--paper);text-align:center;line-height:1.5;
+}
+.flow .node small{display:block;color:var(--faint);font-size:10px;letter-spacing:.1em}
+.flow .pipe{flex:1;min-width:60px;height:2px;background:var(--line);position:relative;overflow:visible}
+.flow .pipe i{position:absolute;top:-3px;left:0;width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 12px var(--amber);animation:travel 2.6s linear infinite}
+.flow .pipe.p2 i{background:var(--cyan);box-shadow:0 0 12px var(--cyan);animation-delay:1.3s}
+@keyframes travel{0%{left:0;opacity:0}12%{opacity:1}88%{opacity:1}100%{left:calc(100% - 8px);opacity:0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.scroll-hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:10px;letter-spacing:.4em;color:var(--faint);animation:bob 2s ease-in-out infinite}
+@keyframes bob{50%{transform:translate(-50%,8px)}}
+
+/* ============ 비교 토글 (모델중심 vs 데이터중심) ============ */
+.vs-toggle{display:flex;gap:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;width:max-content;margin:26px auto 22px}
+.vs-toggle button{
+  font-family:var(--mono);font-size:13px;padding:12px 26px;background:var(--panel);
+  color:var(--dim);border:none;cursor:pointer;transition:all .25s;letter-spacing:.04em;
+}
+.vs-toggle button.on{background:var(--amber);color:#1a1205;font-weight:600}
+.vs-stage{position:relative;min-height:280px}
+.vs-card{position:absolute;inset:0;opacity:0;transform:translateX(20px) scale(.99);transition:all .45s ease;pointer-events:none}
+.vs-card.show{opacity:1;transform:none;pointer-events:auto;position:relative}
+.vs-card .formula{
+  font-family:var(--mono);font-size:clamp(13px,2.4vw,17px);text-align:center;
+  background:var(--panel-2);border:1px dashed var(--line);border-radius:10px;padding:18px;margin-bottom:18px;
+}
+.vs-card .formula .fix{color:var(--faint);text-decoration:line-through}
+.vs-card .formula .var{color:var(--amber);font-weight:600}
+.vs-card ul{list-style:none;display:grid;gap:9px}
+.vs-card li{padding-left:22px;position:relative;color:var(--dim);font-size:15px}
+.vs-card li::before{content:'▸';position:absolute;left:4px;color:var(--amber)}
+
+/* ============ 기법 카드 (아코디언 그리드) ============ */
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:24px}
+.tech{
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:18px 20px;cursor:pointer;transition:border-color .25s, transform .25s;
+}
+.tech:hover{border-color:var(--amber);transform:translateY(-3px)}
+.tech .t-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tech .t-name{font-weight:700;font-size:15.5px}
+.tech .t-en{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.04em;display:block;margin-top:2px}
+.tech .t-arrow{color:var(--amber);transition:transform .3s;flex:none;font-size:13px}
+.tech.open .t-arrow{transform:rotate(90deg)}
+.tech .t-body{max-height:0;overflow:hidden;transition:max-height .45s ease;color:var(--dim);font-size:13.8px;line-height:1.7}
+.tech.open .t-body{max-height:300px}
+.tech .t-body p{padding-top:12px;border-top:1px dashed var(--line);margin-top:12px}
+
+/* ============ 파이프라인(AI 라이프사이클) ============ */
+.pipeline{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.pipeline .step{
+  flex:1;min-width:108px;text-align:center;cursor:pointer;
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 8px;
+  transition:all .25s;position:relative;
+}
+.pipeline .step .n{font-family:var(--mono);font-size:10px;color:var(--faint)}
+.pipeline .step .nm{font-size:13.5px;font-weight:600;margin-top:3px}
+.pipeline .step.data-side{border-bottom:3px solid var(--amber)}
+.pipeline .step.model-side{border-bottom:3px solid var(--cyan)}
+.pipeline .step.deploy-side{border-bottom:3px solid var(--coral)}
+.pipeline .step.on{background:var(--panel-2);border-color:var(--amber);transform:translateY(-4px)}
+.pipe-desc{margin-top:16px;background:var(--panel-2);border:1px dashed var(--line);border-radius:10px;padding:18px 22px;color:var(--dim);font-size:14.5px;min-height:88px}
+.pipe-desc b{color:var(--amber)}
+.legend{display:flex;gap:18px;margin-top:14px;font-family:var(--mono);font-size:11px;color:var(--faint)}
+.legend i{display:inline-block;width:18px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+
+/* ============ 통계 카운터 ============ */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:26px 0}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;text-align:center}
+.stat .v{font-family:var(--mono);font-size:clamp(22px,3vw,30px);font-weight:600;color:var(--amber)}
+.stat .v small{font-size:.55em;color:var(--dim)}
+.stat .k{font-size:12.5px;color:var(--dim);margin-top:4px}
+.stat.cyan .v{color:var(--cyan)}
+.stat.coral .v{color:var(--coral)}
+
+/* ============ 막대 차트 ============ */
+.chart{margin-top:20px;display:grid;gap:16px}
+.bar-row{display:grid;grid-template-columns:120px 1fr 130px;gap:14px;align-items:center}
+@media(max-width:640px){.bar-row{grid-template-columns:90px 1fr 100px}}
+.bar-row .lb{font-family:var(--mono);font-size:12px;color:var(--dim);text-align:right}
+.bar-row .track{height:26px;background:var(--panel-2);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.bar-row .fill{height:100%;width:0;border-radius:5px;transition:width 1.4s cubic-bezier(.2,.7,.2,1);display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-family:var(--mono);font-size:11px;color:#10130a;font-weight:600}
+.bar-row .val{font-family:var(--mono);font-size:12px;color:var(--paper)}
+.bar-row .val small{color:var(--faint)}
+.f-amber{background:linear-gradient(90deg,#b97a14,var(--amber))}
+.f-cyan{background:linear-gradient(90deg,#1f8a81,var(--cyan))}
+.f-coral{background:linear-gradient(90deg,#c24a30,var(--coral))}
+.f-dim{background:#3a4254}
+
+/* ============ KCL 사이클 ============ */
+.kcl{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px;counter-reset:kcl}
+@media(max-width:820px){.kcl{grid-template-columns:repeat(2,1fr)}}
+.kcl .k-step{
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;
+  cursor:pointer;transition:all .25s;position:relative;
+}
+.kcl .k-step::before{
+  counter-increment:kcl;content:'0' counter(kcl);
+  font-family:var(--mono);font-size:11px;color:var(--faint);
+}
+.kcl .k-step.on{border-color:var(--amber);background:var(--panel-2);transform:translateY(-4px)}
+.kcl .k-step.on::before{color:var(--amber)}
+.kcl .k-name{font-weight:700;font-size:14.5px;margin-top:4px;line-height:1.4}
+.kcl .k-en{font-family:var(--mono);font-size:10px;color:var(--faint);display:block;margin-top:4px}
+.kcl-desc{margin-top:16px;background:var(--panel-2);border:1px dashed var(--line);border-radius:10px;padding:20px 24px;color:var(--dim);font-size:14.5px;min-height:120px}
+.kcl-desc b{color:var(--amber)}
+.cycle-note{font-family:var(--mono);font-size:11px;color:var(--faint);text-align:center;margin-top:12px;letter-spacing:.1em}
+
+/* ============ 스테퍼(데이터 생성 파이프라인) ============ */
+.stepper{margin-top:22px}
+.stepper .s-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.stepper .s-tab{
+  font-family:var(--mono);font-size:12px;padding:9px 16px;border-radius:99px;cursor:pointer;
+  border:1px solid var(--line);background:var(--panel);color:var(--dim);transition:all .25s;
+}
+.stepper .s-tab.on{background:var(--cyan);color:#06211e;border-color:var(--cyan);font-weight:600}
+.stepper .s-view{margin-top:16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:24px 26px;min-height:200px}
+.stepper .s-view h4{font-family:var(--serif);font-size:18px;color:var(--cyan);margin-bottom:10px}
+.stepper .s-view p{color:var(--dim);font-size:14.5px;margin-bottom:10px}
+.example-box{background:var(--ink);border:1px solid var(--line);border-radius:8px;padding:14px 18px;font-size:13.5px;color:var(--paper);margin:12px 0;font-style:italic}
+.example-box .tag{font-family:var(--mono);font-style:normal;font-size:10px;color:var(--amber);display:block;margin-bottom:6px;letter-spacing:.15em}
+
+/* ============ 퀴즈(A vs B) ============ */
+.duel{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:stretch;margin-top:20px}
+@media(max-width:720px){.duel{grid-template-columns:1fr}.duel .vs{display:none}}
+.duel .opt{
+  background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:22px;cursor:pointer;
+  transition:all .25s;text-align:center;
+}
+.duel .opt:hover{border-color:var(--cyan)}
+.duel .opt .t{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.2em;margin-bottom:10px}
+.duel .opt .big{font-family:var(--mono);font-size:24px;font-weight:600;color:var(--paper)}
+.duel .opt .d{font-size:13.5px;color:var(--dim);margin-top:8px;line-height:1.65}
+.duel .vs{display:flex;align-items:center;font-family:var(--serif);font-size:22px;color:var(--faint)}
+.duel .opt.win{border-color:var(--green);background:rgba(126,201,126,.07)}
+.duel .opt.lose{opacity:.45;border-color:var(--line)}
+.duel .opt .badge{display:none;font-family:var(--mono);font-size:11px;margin-top:12px;padding:4px 12px;border-radius:99px}
+.duel .opt.win .badge{display:inline-block;background:rgba(126,201,126,.15);color:var(--green)}
+.duel .opt.lose .badge{display:inline-block;background:var(--panel-2);color:var(--faint)}
+.duel-exp{margin-top:14px;background:var(--panel-2);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:16px 20px;color:var(--dim);font-size:14px;display:none}
+.duel-exp.show{display:block;animation:fadeUp .5s both}
+
+/* ============ 캡션 슬라이더 데모 ============ */
+.slider-demo{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:26px;margin-top:20px}
+.slider-demo .row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.slider-demo label{font-family:var(--mono);font-size:12px;color:var(--dim);flex:none}
+.slider-demo input[type=range]{flex:1;accent-color:var(--amber);min-width:160px}
+.slider-demo .gauge{font-family:var(--mono);font-size:12px;color:var(--amber);min-width:110px;text-align:right}
+.caption-out{margin-top:18px;background:var(--ink);border:1px dashed var(--line);border-radius:10px;padding:18px 22px;font-size:15px;min-height:96px;transition:all .3s}
+.caption-out .cap-tag{font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:.2em;display:block;margin-bottom:8px}
+
+/* ============ MCQ 퀴즈 ============ */
+.quiz{display:grid;gap:18px;margin-top:24px}
+.q-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 26px}
+.q-card .q{font-weight:700;font-size:16px;margin-bottom:14px}
+.q-card .q .qn{font-family:var(--mono);color:var(--amber);margin-right:8px}
+.q-card .opts{display:grid;gap:8px}
+.q-card .o{
+  text-align:left;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;
+  padding:11px 16px;cursor:pointer;color:var(--dim);font-size:14.5px;font-family:var(--sans);transition:all .2s;
+}
+.q-card .o:hover{border-color:var(--amber);color:var(--paper)}
+.q-card .o.correct{border-color:var(--green);background:rgba(126,201,126,.1);color:var(--green)}
+.q-card .o.wrong{border-color:var(--coral);background:rgba(255,107,74,.08);color:var(--coral)}
+.q-card .exp{display:none;margin-top:12px;font-size:13.5px;color:var(--dim);border-top:1px dashed var(--line);padding-top:12px}
+.q-card .exp.show{display:block}
+.q-card .exp b{color:var(--green)}
+#quiz-score{font-family:var(--mono);font-size:13px;color:var(--amber);margin-top:16px}
+
+/* ============ 용어집 그리드 ============ */
+.gloss-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:24px}
+.g-chip{
+  background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:15px 18px;
+  cursor:pointer;transition:all .25s;text-align:left;font-family:var(--sans);
+}
+.g-chip:hover{border-color:var(--cyan);transform:translateY(-3px)}
+.g-chip .gn{font-weight:700;font-size:14.5px;color:var(--paper)}
+.g-chip .ge{font-family:var(--mono);font-size:10px;color:var(--faint);display:block;margin-top:3px}
+.g-chip .gt{display:inline-block;font-family:var(--mono);font-size:9.5px;color:var(--cyan);border:1px solid rgba(57,208,195,.3);border-radius:99px;padding:1px 8px;margin-top:8px}
+
+/* ============ 모달 ============ */
+#modal-bg{
+  position:fixed;inset:0;background:rgba(5,7,10,.75);backdrop-filter:blur(6px);
+  z-index:200;display:none;align-items:flex-end;justify-content:center;
+}
+#modal-bg.show{display:flex}
+#modal{
+  background:var(--panel);border:1px solid var(--line);border-radius:18px 18px 0 0;
+  max-width:760px;width:100%;max-height:82vh;overflow-y:auto;padding:34px 38px 44px;
+  animation:sheetUp .35s cubic-bezier(.2,.8,.25,1) both;position:relative;
+}
+@keyframes sheetUp{from{transform:translateY(60px);opacity:0}to{transform:none;opacity:1}}
+#modal .m-close{position:sticky;top:0;float:right;background:var(--panel-2);border:1px solid var(--line);color:var(--dim);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px}
+#modal .m-close:hover{color:var(--amber);border-color:var(--amber)}
+#modal .m-tag{font-family:var(--mono);font-size:10.5px;color:var(--cyan);letter-spacing:.25em}
+#modal h3{font-family:var(--serif);font-size:25px;margin:8px 0 2px}
+#modal .m-en{font-family:var(--mono);font-size:12px;color:var(--faint);margin-bottom:16px;display:block}
+#modal .m-short{font-size:15.5px;color:var(--amber);border-left:3px solid var(--amber);padding:6px 14px;margin:14px 0 18px;background:rgba(245,165,36,.06)}
+#modal .m-body{color:var(--dim);font-size:14.8px}
+#modal .m-body p{margin-bottom:12px}
+#modal .m-body b{color:var(--paper)}
+#modal .m-refs{margin-top:20px;border-top:1px dashed var(--line);padding-top:16px}
+#modal .m-refs .rt{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.2em;margin-bottom:10px}
+
+/* ============ 참고문헌 ============ */
+.refs{display:grid;gap:10px;margin-top:24px}
+.ref{
+  display:grid;grid-template-columns:54px 1fr auto;gap:16px;align-items:center;
+  background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:14px 20px;
+  text-decoration:none;transition:all .25s;
+}
+.ref:hover{border-color:var(--amber);transform:translateX(6px)}
+.ref .rn{font-family:var(--mono);font-size:11px;color:var(--faint)}
+.ref .rt{color:var(--paper);font-size:14.5px;font-weight:600;line-height:1.5}
+.ref .rv{font-family:var(--mono);font-size:11px;color:var(--cyan);margin-top:2px}
+.ref .go{font-family:var(--mono);color:var(--amber);font-size:13px}
+@media(max-width:640px){.ref{grid-template-columns:1fr auto}.ref .rn{display:none}}
+
+/* ============ 챗봇 ============ */
+#chat-fab{
+  position:fixed;right:24px;bottom:24px;z-index:150;
+  width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--amber),var(--coral));color:#1a1205;
+  font-size:24px;box-shadow:0 8px 30px rgba(245,165,36,.35);transition:transform .25s;
+}
+#chat-fab:hover{transform:scale(1.08)}
+#chat-panel{
+  position:fixed;right:24px;bottom:96px;z-index:150;width:min(400px,calc(100vw - 40px));
+  height:min(560px,calc(100vh - 140px));background:var(--panel);border:1px solid var(--line);
+  border-radius:16px;display:none;flex-direction:column;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.55);
+}
+#chat-panel.show{display:flex;animation:sheetUp .3s both}
+#chat-head{padding:16px 20px;border-bottom:1px solid var(--line);background:var(--panel-2)}
+#chat-head .ct{font-family:var(--serif);font-weight:700;font-size:16px}
+#chat-head .cs{font-family:var(--mono);font-size:10px;color:var(--green)}
+#chat-head .cs::before{content:'●';margin-right:5px}
+#chat-log{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:86%;padding:11px 15px;border-radius:13px;font-size:13.8px;line-height:1.65}
+.msg.bot{background:var(--panel-2);border:1px solid var(--line);align-self:flex-start;color:var(--paper);border-bottom-left-radius:4px}
+.msg.bot b{color:var(--amber)}
+.msg.user{background:rgba(245,165,36,.14);border:1px solid rgba(245,165,36,.3);align-self:flex-end;border-bottom-right-radius:4px}
+.msg .src{display:block;margin-top:7px;font-family:var(--mono);font-size:10px;color:var(--faint)}
+#chat-sug{display:flex;gap:6px;flex-wrap:wrap;padding:0 18px 10px}
+#chat-sug button{
+  font-size:11px;font-family:var(--sans);background:var(--panel-2);color:var(--cyan);
+  border:1px solid var(--line);border-radius:99px;padding:5px 11px;cursor:pointer;transition:all .2s;
+}
+#chat-sug button:hover{border-color:var(--cyan)}
+#chat-form{display:flex;gap:8px;padding:14px;border-top:1px solid var(--line);background:var(--panel-2)}
+#chat-in{
+  flex:1;background:var(--ink);border:1px solid var(--line);border-radius:9px;
+  color:var(--paper);padding:10px 14px;font-size:13.5px;font-family:var(--sans);outline:none;
+}
+#chat-in:focus{border-color:var(--amber)}
+#chat-form button{background:var(--amber);border:none;border-radius:9px;padding:0 18px;font-weight:700;cursor:pointer;color:#1a1205}
+
+/* 푸터 */
+footer{padding:60px 0 80px;color:var(--faint);font-size:12.5px;font-family:var(--mono);border-top:1px solid var(--line);margin-top:80px;text-align:center}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- 사이드 내비게이션 -->
+<nav class="side" id="sidenav">
+  <a href="#intro"><span class="dot"></span><span class="lb">INTRO</span></a>
+  <a href="#concept"><span class="dot"></span><span class="lb">핵심 개념</span></a>
+  <a href="#ch1"><span class="dot"></span><span class="lb">01 수동 수집</span></a>
+  <a href="#ch2"><span class="dot"></span><span class="lb">02 자동 생성</span></a>
+  <a href="#ch3"><span class="dot"></span><span class="lb">03 품질 vs 수량</span></a>
+  <a href="#ch4"><span class="dot"></span><span class="lb">04 미래 과제</span></a>
+  <a href="#quiz"><span class="dot"></span><span class="lb">개념 체크</span></a>
+  <a href="#glossary"><span class="dot"></span><span class="lb">기반 기술 용어집</span></a>
+  <a href="#refs"><span class="dot"></span><span class="lb">참고문헌</span></a>
+</nav>
+
+<!-- ============ 히어로 ============ -->
+<header class="hero" id="intro">
+  <div class="wrap">
+    <div class="hero-tag">ETRI 우수논문 특강 · 인터랙티브 강의 노트</div>
+    <h1>모델이 아니라 <em>데이터</em>를 바꿔라<br>— Data-Centric AI 연구</h1>
+    <p class="sub">
+      박관용 교수(서울시립대, 前 ETRI·KAIST)의 특강
+      <i>“A Data-Centric Perspective on Vision-Centered AI: From Manual Collection to Automatic Generation”</i>을
+      누구나 이해할 수 있게 재구성했습니다. 밑줄 친 <button class="term" data-term="datacentric">용어</button>를 클릭하면
+      기반 기술의 핵심 개념을 바로 확인할 수 있고, 우측 하단 💬 버튼으로 자유롭게 질문할 수 있습니다.
+    </p>
+    <div class="meta">
+      <span class="chip">발표자 <b>박관용 (서울시립대 컴퓨터과학부)</b></span>
+      <span class="chip">분야 <b>Computer Vision · Data-Centric AI · 생성 AI</b></span>
+      <span class="chip">수상 <b>WACV 최우수 학생논문 · OmniLabel 3위</b></span>
+    </div>
+    <div class="flow">
+      <div class="node">📦 데이터<small>COLLECT / GENERATE</small></div>
+      <div class="pipe"><i></i></div>
+      <div class="node">🧠 AI 모델<small>TRAIN</small></div>
+      <div class="pipe p2"><i></i></div>
+      <div class="node">🔁 평가·피드백<small>EVALUATE / REFINE</small></div>
+    </div>
+  </div>
+  <div class="scroll-hint">SCROLL ↓</div>
+</header>
+
+<div class="wrap">
+
+<!-- ============ 핵심 개념 ============ -->
+<section class="block" id="concept">
+  <div class="rv">
+    <div class="kicker"><span class="no">00 /</span> 기본 개념 잡기</div>
+    <h2 class="title">왜 “데이터 중심”인가?</h2>
+    <p class="lead">
+      초기 딥러닝 연구의 불문율은 <b class="hl">“공정한 비교(Fair Comparison)”</b> — 같은 벤치마크 데이터셋을 고정해 두고
+      누가 더 좋은 모델을 만드는지 겨루는 것이었습니다. <a class="cite" href="https://arxiv.org/abs/1512.03385" target="_blank">ResNet (CVPR 2016)</a>이
+      대표적이죠. 하지만 현실 세계의 데이터는 고정되어 있지 않고, 지저분하며,
+      <a class="cite" href="https://arxiv.org/abs/2103.14749" target="_blank">유명 테스트셋 10개에도 라벨 오류가 만연</a>합니다.
+      “Garbage in, garbage out” — 모델을 만지작거리는 것보다 <b class="hl">데이터를 탐색하고 고치는 투자</b>가
+      더 가치 있다는 것이 이 강의의 출발점입니다.
+    </p>
+  </div>
+
+  <div class="rv">
+    <h3 class="sub">모델 중심 vs 데이터 중심 — 클릭해서 비교해 보세요</h3>
+    <div class="vs-toggle">
+      <button class="on" data-vs="model">Model-Centric AI</button>
+      <button data-vs="data">Data-Centric AI</button>
+    </div>
+    <div class="vs-stage">
+      <div class="vs-card show panel" id="vs-model">
+        <div class="formula">성능 = f( <span class="var">모델</span> , <span class="fix">데이터(고정)</span> )</div>
+        <ul>
+          <li><b>데이터셋은 주어진 것.</b> 잘 정제된 벤치마크(예: 개/고양이 이미지)를 받아서 시작합니다.</li>
+          <li>목표는 이 데이터셋에서 <b>최고의 모델</b>을 만드는 것 — 학교 ML 수업에서 배우는 방식입니다.</li>
+          <li>도구: 신경망 구조 설계, 하이퍼파라미터 튜닝, 손실 함수 수정, 정규화(regularization)…</li>
+          <li>한계: 기업과 사용자는 “정제된 데이터 위의 영리한 트릭”엔 관심이 없습니다. 현실 데이터에서 동작해야 하니까요.</li>
+        </ul>
+      </div>
+      <div class="vs-card panel" id="vs-data">
+        <div class="formula">성능 = f( <span class="fix">모델(고정)</span> , <span class="var">데이터</span> )</div>
+        <ul>
+          <li><b>모델은 무엇이든 좋다.</b> 대신 <b>훈련 데이터셋을 체계적·알고리즘적으로 개선</b>합니다.</li>
+          <li>형태 ① 데이터를 <b>이해</b>해서 모델을 개선 — 예: <button class="term" data-term="curriculum">커리큘럼 학습</button> (쉬운 데이터부터 학습)</li>
+          <li>형태 ② 데이터를 <b>수정</b>해서 모델을 개선 — 예: <button class="term" data-term="confident">신뢰 학습</button> (잘못 라벨된 데이터를 훈련 전에 제거)</li>
+          <li>최신 트렌드: DeepSeek의 학습 데이터 밈, DALL·E 2의 데이터 이슈, “모델은 공개해도 데이터는 숨기는” <a class="cite" href="https://allenai.org/blog/molmo" target="_blank">Molmo가 지적한 LVLM 개방성 문제</a>처럼, 이제 경쟁력의 원천은 데이터입니다.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="rv">
+    <h3 class="sub">Data-Centric AI의 대표 기법 7가지 — 카드를 클릭하세요</h3>
+    <div class="tech-grid" id="techGrid"></div>
+  </div>
+
+  <div class="rv">
+    <h3 class="sub">AI 라이프사이클 — 단계를 클릭하면 설명이 나타납니다</h3>
+    <p class="lead" style="font-size:15px">실제 서비스에 쓰이는 AI의 A-to-Z. 절반 이상이 <b class="hl">데이터 단계</b>라는 점에 주목하세요.</p>
+    <div class="pipeline" id="pipeline"></div>
+    <div class="legend">
+      <span><i style="background:var(--amber)"></i>데이터 단계</span>
+      <span><i style="background:var(--cyan)"></i>모델링 단계</span>
+      <span><i style="background:var(--coral)"></i>배포 단계</span>
+    </div>
+    <div class="pipe-desc" id="pipeDesc">단계를 클릭해 보세요.</div>
+  </div>
+</section>
+
+<!-- ============ 챕터 1 ============ -->
+<section class="block" id="ch1">
+  <div class="rv">
+    <div class="kicker"><span class="no">01 /</span> Large-scale Manual Data Collection</div>
+    <h2 class="title">대규모 수동 데이터 수집 — MTMMC 프로젝트</h2>
+    <p class="lead">
+      “현실 문제를 맨바닥부터 해결한다”는 것이 어떤 의미인지 보여주는 사례입니다.
+      팬데믹 상황의 지능형 감시(확진자 동선 추적)를 위해, 기존의 <b>단일 카메라·RGB</b> 표준 설정을 넘어
+      <b class="hl">다중 카메라 + 열화상(RGB-T) + 3D + 비콘</b>이라는 새로운 문제를 직접 설계하고,
+      데이터셋 <a class="cite" href="https://arxiv.org/abs/2403.20225" target="_blank">MTMMC (CVPR 2024)</a>를 구축했습니다.
+      핵심 기반 기술: <button class="term" data-term="mtmc">다중 카메라 추적</button>, <button class="term" data-term="rgbt">RGB-T 융합</button>,
+      <button class="term" data-term="semiauto">준자동 라벨링</button>
+    </p>
+  </div>
+
+  <div class="rv">
+    <h3 class="sub">데이터셋 구축 환경</h3>
+    <div class="grid2">
+      <div class="panel">
+        <b class="hl">🏫 KAIST 캠퍼스 + 🏭 공장</b>
+        <p style="color:var(--dim);font-size:14.5px;margin-top:8px">
+          16대의 카메라를 두 가지 실제 환경에 설치했습니다. 실내·실외, 다층(multi-floor), 카메라 간
+          시야가 겹치는 구간(overlapping views)까지 포함해 현실의 복잡성을 그대로 담았습니다.
+        </p>
+      </div>
+      <div class="panel">
+        <b class="hl">🌡️ 동축 광학계 RGB-T 카메라</b>
+        <p style="color:var(--dim);font-size:14.5px;margin-top:8px">
+          RGB 카메라와 열화상 카메라가 같은 광축을 공유하는 특수 장비로 촬영해,
+          두 모달리티가 픽셀 단위로 정렬된 데이터를 확보했습니다. 야간·역광 등 RGB가 취약한 조건을 열화상이 보완합니다.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="rv">
+    <h3 class="sub">현실 배포 결과 — 라벨링 자동화의 위력</h3>
+    <p class="lead" style="font-size:15px">
+      병원에서 COVID-19 환자 동선을 추적하는 실제 과제에 적용한 결과입니다.
+      사람이 직접 추적할 때와, AI가 자동 추적할 때를 비교해 보세요. (막대가 차오르는 애니메이션은 스크롤 시 시작됩니다)
+    </p>
+    <div class="panel">
+      <div style="font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.2em;margin-bottom:6px">추적 정확도 (%)</div>
+      <div class="chart" id="chartAcc">
+        <div class="bar-row"><span class="lb">사람 수동</span><div class="track"><div class="fill f-dim" data-w="34.6" data-max="100"></div></div><span class="val">34.6 <small>/ 1시간 50분</small></span></div>
+        <div class="bar-row"><span class="lb">반자동</span><div class="track"><div class="fill f-cyan" data-w="60.4" data-max="100"></div></div><span class="val">60.4 <small>/ 1시간 (1.8× 빠름)</small></span></div>
+        <div class="bar-row"><span class="lb">완전 자동</span><div class="track"><div class="fill f-amber" data-w="97.9" data-max="100"></div></div><span class="val">97.9 <small>/ 17분 (6.5× 빠름)</small></span></div>
+      </div>
+      <p class="note">완전 자동 추적은 사람보다 <b class="hl">6.5배 빠르면서 정확도는 +63.4%p</b> 높았습니다. 잘 만든 데이터셋 → 잘 학습된 모델 → 현실 배포의 선순환입니다.</p>
+    </div>
+  </div>
+
+  <div class="rv">
+    <h3 class="sub">그런데… 비용이 어마어마합니다</h3>
+    <div class="stats" id="costStats">
+      <div class="stat"><div class="v" data-count="600">0</div><div class="k">참여 배우 (명+)</div></div>
+      <div class="stat"><div class="v" data-count="300">0</div><div class="k">어노테이터 (명+)</div></div>
+      <div class="stat"><div class="v" data-count="40">0</div><div class="k">연구원 (명+)</div></div>
+      <div class="stat cyan"><div class="v" data-count="12">0</div><div class="k">수집+라벨링 (개월)</div></div>
+      <div class="stat cyan"><div class="v" data-count="24">0</div><div class="k">모델 개발+배포 (개월)</div></div>
+      <div class="stat coral"><div class="v">$<span data-count="7">0</span>M</div><div class="k">총 비용 (데이터 2M + 개발 5M)</div></div>
+    </div>
+    <p class="lead" style="font-size:15px">
+      여기에 <b class="hl3">프라이버시·라이선스 문제</b>까지 더해집니다. 결론:
+      <b class="hl">“복잡한 과제를 위한 대규모 데이터셋의 수동 구축은 현실적으로 거의 불가능하다.”</b>
+      그래서 다음 질문이 나옵니다 — <i>“AI를 위한 훈련 데이터를 쉽게 수집하거나 생성할 수는 없을까?”</i>
+    </p>
+  </div>
+</section>
+
+<!-- ============ 챕터 2 ============ -->
+<section class="block" id="ch2">
+  <div class="rv">
+    <div class="kicker"><span class="no">02 /</span> Towards Automatic Data Generation</div>
+    <h2 class="title">생성 모델로 훈련 데이터를 만들다</h2>
+    <p class="lead">
+      ChatGPT 같은 <button class="term" data-term="llm">LLM</button>, Sora 같은 영상 생성기 등
+      <button class="term" data-term="genai">생성 AI</button>가 충분히 강력해지자 발상이 뒤집힙니다 —
+      <b class="hl">생성 모델을 “데이터 생성 에이전트”로 쓰자.</b>
+      실제로 <a class="cite" href="https://arxiv.org/abs/2312.17742" target="_blank">SynCLR (CVPR 2024)</a>은
+      합성 이미지만으로 학습한 모델이 실제 데이터 학습에 필적함을 보였고, CVPR에는 합성 데이터 전용 워크숍
+      (<a class="cite" href="https://syndata4cv.github.io/" target="_blank">SynData4CV</a>,
+      <a class="cite" href="https://syntagen.github.io/" target="_blank">SynTagen</a>)이 생겼습니다.
+    </p>
+  </div>
+
+  <div class="rv">
+    <h3 class="sub">합성 데이터의 스케일링 — 무엇이 성능을 좌우하나</h3>
+    <p class="lead" style="font-size:15px">
+      <a class="cite" href="https://arxiv.org/abs/2312.04567" target="_blank">Scaling Laws of Synthetic Images (CVPR 2024)</a>에 따르면,
+      생성 데이터의 <button class="term" data-term="scaling">스케일링</button> 효과는 3가지 요인이 좌우합니다.
+      특히 이미지-텍스트 간 <b>“개념 불일치(concept mismatch)”</b>가 적을수록 잘 스케일됩니다.
+    </p>
+    <div class="grid3">
+      <div class="panel"><b class="hl">① 어떤 T2I 모델인가</b><p style="color:var(--dim);font-size:13.8px;margin-top:6px">Stable Diffusion / Imagen / Muse 등 <button class="term" data-term="t2i">텍스트-이미지 모델</button>의 선택 자체가 데이터 품질을 결정합니다.</p></div>
+      <div class="panel"><b class="hl">② Guidance Scale</b><p style="color:var(--dim);font-size:13.8px;margin-top:6px"><button class="term" data-term="cfg">CFG 스케일</button>을 <b>낮추면</b> 더 다양한 이미지가 생성되고 → 학습 성능이 좋아집니다.</p></div>
+      <div class="panel"><b class="hl">③ 텍스트 프롬프트</b><p style="color:var(--dim);font-size:13.8px;margin-top:6px">프롬프트가 다양할수록 이미지도 다양해지고 → 성능이 좋아집니다. <b>다양성이 핵심 화폐</b>입니다.</p></div>
+    </div>
+  </div>
+
+  <div class="rv">
+    <h3 class="sub">발표자의 연구: 서술 기반 객체 탐지를 위한 데이터 자동 생성</h3>
+    <p class="lead" style="font-size:15px">
+      <button class="term" data-term="dod">서술 기반 객체 탐지</button>는 “수영장에 뛰어드는 사람을 찾아줘”처럼
+      자유 문장으로 객체를 찾는 과제입니다. 이를 위해선 <b>비전(위치 찾기) + 언어(문장 이해) + 멀티모달(연결)</b>
+      세 가지 지식이 모두 필요한데, 기존 모델(GLIP·FIBER)은 설명이 길어질수록 성능이 급락했습니다
+      (GLIP: 짧은 설명 29.4 → 긴 설명 8.2). 원인은 <b class="hl3">“짧고 빈약한 설명만 담긴 기존 데이터”</b>.
+      해법으로 발표자는 흩어져 있는 AI 모델들의 지식을 하나로 모으는
+      <b class="hl">지식 통합 학습(Knowledge Consolidated Learning)</b> 프레임워크를 제안합니다.
+      <a class="cite" href="https://arxiv.org/abs/2408.05363" target="_blank">ECCV 2024</a>
+      <a class="cite" href="https://scholar.google.com/scholar?q=A+Multimodal+Chain+of+Tools+for+Described+Object+Detection" target="_blank">NeurIPSW 2024</a>
+      <a class="cite" href="https://scholar.google.com/scholar?q=Learning+Compositionality+from+Multifaceted+Synthetic+Data+for+Language-based+Object+Detection" target="_blank">IJCV</a>
+    </p>
+    <div class="kcl" id="kcl"></div>
+    <div class="kcl-desc" id="kclDesc"></div>
+    <div class="cycle-note">↻ 04 피드백 → 01 데이터 생성으로 되돌아가는 순환 구조 = 데이터가 스스로 진화</div>
+  </div>
+
+  <div class="rv">
+    <h3 class="sub">데이터 생성 파이프라인 — 단계별로 따라가 보세요</h3>
+    <div class="stepper">
+      <div class="s-tabs" id="genTabs"></div>
+      <div class="s-view" id="genView"></div>
+    </div>
+  </div>
+
+  <div class="rv">
+    <h3 class="sub">결과: 5.8만 장의 합성 데이터가 560만 장의 실데이터를 이겼다</h3>
+    <div class="panel">
+      <div style="font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.2em;margin-bottom:6px">전체 성능 AP — 데이터 구성별</div>
+      <div class="chart" id="chartAP">
+        <div class="bar-row"><span class="lb">실데이터 5.5M</span><div class="track"><div class="fill f-dim" data-w="22.3" data-max="40">22.3</div></div><span class="val">22.3</span></div>
+        <div class="bar-row"><span class="lb">+ 생성 58K</span><div class="track"><div class="fill f-cyan" data-w="27.3" data-max="40">27.3</div></div><span class="val">27.3 <small>(+5.0)</small></span></div>
+        <div class="bar-row"><span class="lb">+ 피드백</span><div class="track"><div class="fill f-amber" data-w="33.7" data-max="40">33.7</div></div><span class="val">33.7 <small>(+5.6)</small></span></div>
+      </div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.2em;margin:22px 0 6px">긴 설명(Long Query) 성능 AP</div>
+      <div class="chart" id="chartAP2">
+        <div class="bar-row"><span class="lb">실데이터 5.5M</span><div class="track"><div class="fill f-dim" data-w="12.4" data-max="30">12.4</div></div><span class="val">12.4</span></div>
+        <div class="bar-row"><span class="lb">+ 생성 58K</span><div class="track"><div class="fill f-cyan" data-w="21.3" data-max="30">21.3</div></div><span class="val">21.3 <small>(+8.9)</small></span></div>
+        <div class="bar-row"><span class="lb">+ 피드백</span><div class="track"><div class="fill f-coral" data-w="25.6" data-max="30">25.6</div></div><span class="val">25.6 <small>(+4.3)</small></span></div>
+      </div>
+      <p class="note">
+        실데이터(객체탐지 0.7M + 구문 그라운딩 0.8M + 이미지-캡션 4M) 대비 <b class="hl">단 58K(1% 수준)의 생성 데이터</b>가
+        성능을 크게 끌어올렸습니다. 핵심은 양이 아니라 <b>“빠져 있던 유형의 데이터를 채우는 것”</b>.
+        약점을 겨냥해 데이터를 만드는 발상은 LLM 수학 추론(<a class="cite" href="https://scholar.google.com/scholar?q=SwS+Self-aware+Weakness-driven+Problem+Synthesis" target="_blank">SwS, NeurIPS 2025</a>)에서도 통합니다.
+        이 모델은 <a class="cite" href="https://www.omnilabel.org/" target="_blank">OmniLabel 챌린지 @ ECCV 2024</a>에서
+        68팀 중 <b class="hl">3위</b>를 차지했습니다 (1위 China Mobile 연구소, 2위 Google &amp; Meta).
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 챕터 3 ============ -->
+<section class="block" id="ch3">
+  <div class="rv">
+    <div class="kicker"><span class="no">03 /</span> Quality vs Quantity</div>
+    <h2 class="title">품질 vs 수량 — 어떤 데이터가 더 좋을까?</h2>
+    <p class="lead">
+      <a class="cite" href="https://youngwanlee.github.io/KOALA/" target="_blank">KOALA (NeurIPS 2024)</a>는
+      <button class="term" data-term="distill">지식 증류</button>로 SDXL을 압축해
+      <b class="hl">1024×1024 이미지를 1초 만에</b> 생성하는 경량 확산 모델입니다.
+      이 연구 과정에서 얻은 “훈련 데이터에 관한 경험적 교훈”이 흥미롭습니다.
+      직접 맞혀 보세요 — <b>어느 쪽이 더 좋은 훈련 데이터였을까요?</b>
+    </p>
+  </div>
+
+  <div class="rv">
+    <h3 class="sub">라운드 1 — 캡션의 출처</h3>
+    <div class="duel" data-duel="1" data-winner="b">
+      <button class="opt" data-side="a">
+        <div class="t">OPTION A</div>
+        <div class="big">8M 장</div>
+        <div class="d">LAION-A-6+ 이미지<br>+ <b>인터넷에서 수집한 원본 텍스트</b><br>(평균 13단어)</div>
+        <span class="badge"></span>
+      </button>
+      <div class="vs">vs</div>
+      <button class="opt" data-side="b">
+        <div class="t">OPTION B</div>
+        <div class="big">8M 장</div>
+        <div class="d">같은 LAION-A-6+ 이미지<br>+ <b>모델이 새로 생성한 상세 캡션</b><br>(평균 72단어)</div>
+        <span class="badge"></span>
+      </button>
+    </div>
+    <div class="duel-exp" id="duelExp1">
+      <b style="color:var(--green)">정답: B.</b> 이미지는 동일해도 <b>캡션의 정보 밀도</b>가 다릅니다. 인터넷 크롤링 텍스트(alt 태그 등)는 짧고 부정확한 반면,
+      캡셔닝 모델이 생성한 72단어 설명은 이미지 내용을 충실히 담아 텍스트-이미지 정렬 학습에 훨씬 유리합니다.
+      “데이터를 고치는 가장 싼 방법은 라벨을 다시 쓰는 것”의 좋은 예시입니다.
+    </div>
+  </div>
+
+  <div class="rv">
+    <h3 class="sub">라운드 2 — 800만 장 vs 49만 장</h3>
+    <div class="duel" data-duel="2" data-winner="b">
+      <button class="opt" data-side="a">
+        <div class="t">OPTION A</div>
+        <div class="big">8,000,000 장</div>
+        <div class="d">LAION-A-6+ (저해상도 580×676)<br>+ 모델 생성 캡션 (평균 72단어)</div>
+        <span class="badge"></span>
+      </button>
+      <div class="vs">vs</div>
+      <button class="opt" data-side="b">
+        <div class="t">OPTION B</div>
+        <div class="big">491,000 장</div>
+        <div class="d">LAION-POP (고해상도 1274×1457)<br>+ 모델 생성 캡션 (평균 81단어)</div>
+        <span class="badge"></span>
+      </button>
+    </div>
+    <div class="duel-exp" id="duelExp2">
+      <b style="color:var(--green)">정답: B.</b> 수량이 <b>16배</b> 적어도, 고해상도 + 고품질 캡션의 49만 장이 이겼습니다.
+      같은 교훈이 다른 분야에서도 반복됩니다 —
+      영상 생성의 <a class="cite" href="https://arxiv.org/abs/2311.15127" target="_blank">Stable Video Diffusion</a>은 데이터 큐레이션이 성능을 갈랐고,
+      LLM 추론의 <a class="cite" href="https://arxiv.org/abs/2501.19393" target="_blank">s1 (test-time scaling)</a>은
+      엄선된 <b>단 1,000개</b> 샘플로 추론 능력을 끌어올렸습니다. <b class="hl">“현재로서는, 데이터 품질이 수량보다 중요해 보인다.”</b>
+    </div>
+  </div>
+
+  <div class="rv">
+    <h3 class="sub">CaptionSmiths — 데이터로 만든 “슬라이더 제어”를 체험해 보세요</h3>
+    <p class="lead" style="font-size:15px">
+      <a class="cite" href="https://scholar.google.com/scholar?q=CaptionSmiths+Flexibly+Controlling+Language+Pattern+in+Image+Captioning" target="_blank">CaptionSmiths (ICCV 2025 Highlight)</a>는
+      캡션의 <b>길이·서술성·고유성</b>을 슬라이더처럼 연속적으로 제어하는 모델입니다.
+      비결은 모델 구조가 아니라 <b class="hl">데이터 중심 해법</b> — 훈련 캡션마다 규칙 기반 계산기로
+      길이/서술성/고유성 점수를 매겨 조건으로 붙여 학습시킨 것뿐입니다. 아래 슬라이더로 그 느낌을 체험해 보세요.
+    </p>
+    <div class="slider-demo">
+      <div class="row">
+        <label>캡션 길이 조건</label>
+        <input type="range" id="capSlider" min="0" max="4" step="1" value="0">
+        <span class="gauge" id="capGauge">조건값 0.00</span>
+      </div>
+      <div class="caption-out">
+        <span class="cap-tag">생성된 캡션 (예시: 해변의 강아지 사진)</span>
+        <span id="capText"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 챕터 4 ============ -->
+<section class="block" id="ch4">
+  <div class="rv">
+    <div class="kicker"><span class="no">04 /</span> Future Problems</div>
+    <h2 class="title">미래 과제 — 스스로 진화하는 AI를 향해</h2>
+    <p class="lead">
+      지금까지의 과정(생성 → 학습 → 평가 → 피드백)에는 여전히 사람이 끼어 있습니다.
+      다음 단계는 <button class="term" data-term="agentic">에이전틱 AI</button>가 이 사이클 전체를 자율적으로 굴리는
+      <b class="hl">“완전 자동 데이터 구축 + 모델 학습 프레임워크 = 자기 진화(Self-evolving) AI”</b>입니다.
+    </p>
+    <div class="grid2" style="margin-top:24px">
+      <div class="panel">
+        <b class="hl">에이전트가 굴리는 데이터 루프</b>
+        <ul style="list-style:none;display:grid;gap:10px;margin-top:12px;color:var(--dim);font-size:14.5px">
+          <li>🔍 <b>검색(Retrieve)</b> — 관련 데이터를 기존 소스에서 찾아오고</li>
+          <li>🎨 <b>생성(Generate)</b> — 생성 모델로 부족한 데이터를 만들고</li>
+          <li>🕹️ <b>시뮬레이션(Simulate)</b> — 자동 시뮬레이션으로 검증 환경을 구성하고</li>
+          <li>📊 <b>평가·피드백(Evaluate &amp; Feedback)</b> — 실패를 분석해 다시 데이터로</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <b class="hl">초기 연구 사례와 한계</b>
+        <p style="color:var(--dim);font-size:14.5px;margin-top:10px">
+          <a class="cite" href="https://arxiv.org/abs/2412.09645" target="_blank">Evaluation Agent</a>는 T2I 확산 모델을
+          에이전트가 효율적으로 평가하는 프레임워크지만, 아직 <b class="hl3">평가에만</b> 적용되고
+          <b class="hl3">에이전트 설계가 쉬운 T2I 분야에만</b> 국한된 초기 단계입니다.
+          전체 사이클의 자동화 — 그것이 열려 있는 연구 기회입니다.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 개념 체크 퀴즈 ============ -->
+<section class="block" id="quiz">
+  <div class="rv">
+    <div class="kicker"><span class="no">05 /</span> Check Point</div>
+    <h2 class="title">개념 체크 퀴즈</h2>
+    <p class="lead">강의의 핵심을 제대로 이해했는지 4문제로 확인해 보세요.</p>
+    <div class="quiz" id="quizBox"></div>
+    <div id="quiz-score"></div>
+  </div>
+</section>
+
+<!-- ============ 용어집 ============ -->
+<section class="block" id="glossary">
+  <div class="rv">
+    <div class="kicker"><span class="no">06 /</span> Foundations</div>
+    <h2 class="title">기반 기술 용어집</h2>
+    <p class="lead">이 강의를 떠받치는 기반 기술들입니다. 카드를 클릭하면 핵심 개념과 참고 문헌이 열립니다. (본문 속 밑줄 용어와 동일)</p>
+    <div class="gloss-grid" id="glossGrid"></div>
+  </div>
+</section>
+
+<!-- ============ 참고문헌 ============ -->
+<section class="block" id="refs">
+  <div class="rv">
+    <div class="kicker"><span class="no">07 /</span> References</div>
+    <h2 class="title">참고문헌</h2>
+    <p class="lead">강의에서 인용된 논문·자료의 원문 링크입니다.</p>
+    <div class="refs" id="refList"></div>
+  </div>
+</section>
+
+</div><!-- /wrap -->
+
+<footer>
+  <div class="wrap">
+    원 자료: 박관용, “A Data-Centric Perspective on Vision-Centered AI” — ETRI 우수논문 특강<br>
+    이 페이지는 학습 목적으로 강의 내용을 재구성한 인터랙티브 노트입니다 · Visual and General Intelligence Lab (visagi.uos.ac.kr)
+  </div>
+</footer>
+
+<!-- ============ 용어 모달 ============ -->
+<div id="modal-bg">
+  <div id="modal" role="dialog" aria-modal="true">
+    <button class="m-close" onclick="closeModal()">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<!-- ============ 챗봇 ============ -->
+<button id="chat-fab" title="강의 내용 질문하기">💬</button>
+<div id="chat-panel">
+  <div id="chat-head">
+    <div class="ct">📚 강의 Q&amp;A</div>
+    <div class="cs">Data-Centric AI 강의 노트 기반 응답</div>
+  </div>
+  <div id="chat-log"></div>
+  <div id="chat-sug"></div>
+  <form id="chat-form">
+    <input id="chat-in" type="text" placeholder="궁금한 내용을 물어보세요…" autocomplete="off">
+    <button type="submit">전송</button>
+  </form>
+</div>
+
+<script>
+/* ==================================================================
+   데이터 정의부 — 용어집 / 기법 카드 / 파이프라인 / KCL / 퀴즈 / 챗봇 KB
+================================================================== */
+
+/* ---------- 용어집 (클릭 → 모달) ---------- */
+const TERMS = {
+  datacentric:{name:'데이터 중심 AI',en:'Data-Centric AI',tag:'패러다임',
+    short:'모델이 아니라 훈련 데이터를 체계적으로 개선해 AI 성능을 높이는 접근법.',
+    body:`<p>전통적 ML(모델 중심)은 <b>데이터를 고정</b>하고 모델 구조·하이퍼파라미터·손실 함수를 바꿔 성능을 올립니다. 데이터 중심 AI는 반대로 <b>모델을 고정</b>하고 데이터를 알고리즘적으로 개선합니다.</p>
+    <p>두 가지 형태가 있습니다. ① <b>데이터를 이해해 모델을 개선</b> — 예: 커리큘럼 학습(쉬운 것부터 학습). ② <b>데이터를 수정해 모델을 개선</b> — 예: 신뢰 학습(오라벨 제거). Andrew Ng이 2021년경 운동으로 확산시켰고, 현재 LLM·생성 AI 시대에는 "모델은 공개해도 데이터는 비공개"일 만큼 데이터가 핵심 경쟁력이 되었습니다.</p>`,
+    refs:[{t:'Northcutt et al., Pervasive Label Errors (2021)',u:'https://arxiv.org/abs/2103.14749'},{t:'Data-Centric AI (MIT 강의)',u:'https://dcai.csail.mit.edu/'}]},
+  curriculum:{name:'커리큘럼 학습',en:'Curriculum Learning',tag:'학습 전략',
+    short:'사람의 교육과정처럼, 쉬운 데이터부터 어려운 데이터 순으로 모델을 학습시키는 방법.',
+    body:`<p>Bengio 등이 2009년 제안했습니다. 무작위 순서 대신 <b>난이도 순으로 데이터를 정렬</b>해 학습하면 더 빠르게 수렴하고 더 좋은 최적점에 도달할 수 있습니다.</p>
+    <p>"데이터를 이해해서 모델을 개선"하는 데이터 중심 AI의 대표 사례입니다. 데이터 자체는 바꾸지 않지만, 데이터의 <b>제시 순서</b>라는 정보를 활용합니다.</p>`,
+    refs:[{t:'Bengio et al., Curriculum Learning (ICML 2009)',u:'https://dl.acm.org/doi/10.1145/1553374.1553380'}]},
+  confident:{name:'신뢰 학습',en:'Confident Learning',tag:'데이터 정제',
+    short:'모델의 예측 확률을 이용해 잘못 라벨링된 데이터를 자동으로 찾아내 제거·수정하는 기법.',
+    body:`<p>모델이 "고양이"라고 강하게 확신하는데 라벨이 "개"라면, 라벨이 틀렸을 가능성이 높습니다. 신뢰 학습은 이런 <b>예측 확률과 라벨의 불일치</b>를 통계적으로 분석해 라벨 오류를 찾아냅니다.</p>
+    <p>Northcutt 등의 연구에 따르면 ImageNet을 포함한 <b>유명 테스트셋 10개에 평균 3.3%의 라벨 오류</b>가 존재합니다. 오픈소스 라이브러리 cleanlab으로 구현되어 있습니다.</p>`,
+    refs:[{t:'Northcutt et al., Confident Learning (JAIR 2021)',u:'https://arxiv.org/abs/1911.00068'},{t:'cleanlab 라이브러리',u:'https://github.com/cleanlab/cleanlab'}]},
+  llm:{name:'대규모 언어 모델',en:'Large Language Model (LLM)',tag:'기반 모델',
+    short:'방대한 텍스트로 학습해 언어를 이해·생성하는 초거대 신경망. GPT, Claude 등.',
+    body:`<p>수조 단어의 텍스트에서 "다음 단어 예측"을 학습한 트랜스포머 기반 모델입니다. 그 과정에서 문법·상식·추론 능력이 창발합니다.</p>
+    <p>이 강의에서 LLM의 역할은 <b>데이터 생성 에이전트</b>입니다. 예컨대 "버스"라는 카테고리만 주면 "음악 축제에서 형형색색 연기에 둘러싸인 버스"처럼 <b>다양하고 자연스럽고 복잡도를 조절한 설명문</b>을 무한히 만들어낼 수 있습니다. 사람 어노테이터가 쓰는 짧고 단조로운 설명을 압도하는 다양성이죠.</p>`,
+    refs:[{t:'Attention Is All You Need (Transformer)',u:'https://arxiv.org/abs/1706.03762'},{t:'GPT-3: Language Models are Few-Shot Learners',u:'https://arxiv.org/abs/2005.14165'}]},
+  mllm:{name:'멀티모달 LLM',en:'Multimodal LLM (MLLM)',tag:'기반 모델',
+    short:'텍스트뿐 아니라 이미지·영상까지 함께 이해하는 LLM. GPT-4V, LLaVA 등.',
+    body:`<p>비전 인코더(이미지 → 특징 벡터)와 LLM을 연결해, 이미지를 보며 대화하고 추론할 수 있는 모델입니다.</p>
+    <p>이 강의에서 MLLM의 역할은 <b>합성 데이터의 검수자</b>입니다. 객체 탐지기가 찾은 후보 박스들 중 "수영장에 뛰어드는 사람"이라는 설명에 맞는 것이 어느 것인지 <b>구성적 이해(compositional understanding)</b>로 판별합니다. 즉 위치 찾기는 탐지기가, 의미 검증은 MLLM이 분담합니다.</p>`,
+    refs:[{t:'LLaVA: Visual Instruction Tuning',u:'https://arxiv.org/abs/2304.08485'},{t:'Flamingo: a Visual Language Model',u:'https://arxiv.org/abs/2204.14198'}]},
+  genai:{name:'생성 AI / 생성 모델',en:'Generative AI / Generative Models',tag:'기반 모델',
+    short:'데이터의 분포를 학습해 새로운 텍스트·이미지·영상·음성을 만들어내는 모델의 총칭.',
+    body:`<p>판별 모델(discriminative)이 "이 이미지는 무엇인가?"에 답한다면, 생성 모델(generative)은 "이런 이미지를 만들어 줘"에 답합니다. GAN → 확산 모델 → 자기회귀 모델로 발전하며 품질이 비약적으로 향상됐습니다.</p>
+    <p>이 강의의 핵심 전환은 생성 모델을 콘텐츠 제작 도구가 아니라 <b>훈련 데이터 공장(data generation agent)</b>으로 쓰는 것입니다. 텍스트는 LLM이, 이미지는 확산 모델이, 라벨은 탐지기+MLLM이 만드는 협업 체계입니다.</p>`,
+    refs:[{t:'GAN (Goodfellow et al., 2014)',u:'https://arxiv.org/abs/1406.2661'},{t:'DDPM (Ho et al., 2020)',u:'https://arxiv.org/abs/2006.11239'}]},
+  t2i:{name:'텍스트-이미지 확산 모델',en:'Text-to-Image Diffusion Model',tag:'생성 모델',
+    short:'노이즈를 점진적으로 제거하며 텍스트 설명에 맞는 이미지를 생성하는 모델. Stable Diffusion 등.',
+    body:`<p><b>확산(diffusion)</b>은 이미지에 노이즈를 조금씩 더해 완전한 노이즈로 만드는 과정을 학습한 뒤, 그 <b>역과정(노이즈 제거)</b>을 반복해 순수 노이즈에서 이미지를 만들어내는 원리입니다. 텍스트 인코더(주로 CLIP)가 만든 임베딩이 각 단계의 노이즈 제거를 조건화해 "텍스트에 맞는" 이미지가 나옵니다.</p>
+    <p>이 강의에서는 LLM이 만든 다양한 설명문을 <b>이미지-텍스트 쌍 데이터로 변환</b>하는 엔진입니다. 장점: 스케일업이 쉽고, 현실에서 보기 드문(sparse) 장면도 마음대로 만들 수 있습니다.</p>`,
+    refs:[{t:'Latent Diffusion / Stable Diffusion (CVPR 2022)',u:'https://arxiv.org/abs/2112.10752'},{t:'Imagen (Google)',u:'https://arxiv.org/abs/2205.11487'}]},
+  cfg:{name:'분류기 없는 가이던스',en:'Classifier-Free Guidance (CFG)',tag:'생성 제어',
+    short:'확산 모델 생성 시 "텍스트를 얼마나 충실히 따를지"를 조절하는 다이얼. 높으면 충실, 낮으면 다양.',
+    body:`<p>확산 모델은 매 스텝에서 ① 텍스트 조건 예측과 ② 무조건 예측을 둘 다 구한 뒤, 그 차이를 guidance scale(CFG)만큼 증폭해 사용합니다. <b>CFG가 높으면</b> 프롬프트에 충실하지만 이미지가 서로 비슷해지고, <b>낮으면</b> 충실도는 떨어지지만 다양성이 올라갑니다.</p>
+    <p>합성 훈련 데이터 관점에서는 의외로 <b>낮은 CFG가 유리</b>합니다 — 다양한 이미지가 만들어져 모델이 더 풍부한 분포를 배우기 때문입니다(Scaling Laws of Synthetic Images, CVPR 2024). "예쁜 이미지"와 "좋은 훈련 데이터"는 다르다는 교훈입니다.</p>`,
+    refs:[{t:'Classifier-Free Diffusion Guidance',u:'https://arxiv.org/abs/2207.12598'},{t:'Scaling Laws of Synthetic Images (CVPR 2024)',u:'https://arxiv.org/abs/2312.04567'}]},
+  dod:{name:'서술 기반 객체 탐지',en:'Described / Language-based Object Detection',tag:'비전-언어 과제',
+    short:'"수영장에 뛰어드는 사람"처럼 자유로운 문장으로 묘사된 객체를 이미지에서 찾아내는 과제.',
+    body:`<p>전통 객체 탐지가 80개 고정 클래스("person", "car"…)만 찾는다면, 서술 기반 탐지는 <b>임의의 자연어 설명</b>으로 객체를 지정합니다. 사용자와 상호작용하는 로봇·검색 시스템의 핵심 기술입니다.</p>
+    <p>세 가지 지식이 동시에 필요합니다: ① <b>비전</b> — 객체 위치 찾기(localization), ② <b>언어</b> — 긴 설명문 이해, ③ <b>멀티모달</b> — 설명과 시각 영역의 연결(grounding). 대표 모델 GLIP·FIBER는 설명이 길어질수록 성능이 급락(GLIP 29.4→8.2)하는 약점이 있었는데, 원인은 모델이 아니라 <b>짧은 설명 위주의 훈련 데이터</b>였습니다.</p>`,
+    refs:[{t:'GLIP: Grounded Language-Image Pre-training',u:'https://arxiv.org/abs/2112.03857'},{t:'OmniLabel 벤치마크',u:'https://www.omnilabel.org/'}]},
+  grounding:{name:'비전-언어 그라운딩',en:'Vision-Language Grounding',tag:'비전-언어 과제',
+    short:'문장 속 표현("왼쪽의 얼룩말")을 이미지의 특정 영역과 연결(접지)하는 기술.',
+    body:`<p>언어 표현이 가리키는 시각적 대상을 정확히 찾아 매핑하는 것을 "grounding(접지)"이라 합니다. CLIP처럼 이미지-텍스트를 같은 임베딩 공간에 두는 대조 학습이 기반이 됩니다.</p>
+    <p>그라운딩 데이터는 사람이 일일이 박스와 구문을 짝지어야 해서 수집 비용이 매우 높습니다. 그래서 이 강의처럼 <b>생성 모델로 그라운딩 데이터를 자동 합성</b>하는 연구가 활발합니다.</p>`,
+    refs:[{t:'CLIP (OpenAI)',u:'https://arxiv.org/abs/2103.00020'},{t:'MDETR: Modulated Detection',u:'https://arxiv.org/abs/2104.12763'}]},
+  pseudo:{name:'의사 라벨링',en:'Pseudo-Labeling',tag:'자동 라벨링',
+    short:'사람 대신 학습된 모델이 예측한 결과를 임시 정답(라벨)으로 사용하는 기법.',
+    body:`<p>라벨이 없는 데이터에 모델의 예측을 라벨로 붙여 학습에 활용합니다. 반지도 학습(semi-supervised learning)의 핵심 기법입니다.</p>
+    <p>생성 이미지에는 박스 라벨이 없으므로 의사 라벨이 필수인데, "아보카도가 도마 위에 놓여 있다" 같은 <b>복잡한 설명에 정확한 박스</b>를 붙이는 것이 난제입니다. 발표자의 해법은 <b>과제 분해(task decomposition)</b> — 탐지기는 주어 단어("avocado")만 찾고, MLLM이 시각 프롬프팅으로 어느 박스가 설명 전체에 맞는지 검증합니다.</p>`,
+    refs:[{t:'Pseudo-Label (Lee, 2013)',u:'https://www.researchgate.net/publication/280581078'},{t:'A Multimodal Chain of Tools (NeurIPSW 2024)',u:'https://scholar.google.com/scholar?q=A+Multimodal+Chain+of+Tools+for+Described+Object+Detection'}]},
+  visualprompt:{name:'시각 프롬프팅',en:'Visual Prompting',tag:'자동 라벨링',
+    short:'이미지 위에 번호·박스·마커를 그려 넣어 MLLM이 특정 영역에 대해 답하도록 유도하는 기법.',
+    body:`<p>MLLM에 "3번 박스가 설명과 일치하나요?"라고 묻기 위해, 이미지에 직접 후보 박스와 번호를 시각적으로 표시해 입력합니다. 텍스트 프롬프트의 시각 버전입니다.</p>
+    <p>이 강의에서는 자동 라벨링 파이프라인의 핵심 부품입니다. 탐지기가 찾은 여러 후보 중 MLLM이 시각 프롬프트를 보고 정답 박스를 고르게 함으로써, <b>사람 없이도 정밀한 박스-설명 쌍</b>을 만들어냅니다.</p>`,
+    refs:[{t:'Set-of-Mark Prompting',u:'https://arxiv.org/abs/2310.11441'}]},
+  distill:{name:'지식 증류',en:'Knowledge Distillation',tag:'모델 경량화',
+    short:'큰 모델(교사)의 지식을 작은 모델(학생)에 전달해, 작지만 성능 좋은 모델을 만드는 기법.',
+    body:`<p>학생 모델이 교사 모델의 출력(또는 중간 특징)을 모방하도록 학습합니다. 정답 라벨만 배우는 것보다 교사의 "부드러운 지식"까지 배워 효율이 높습니다.</p>
+    <p>KOALA는 SDXL(교사)의 U-Net 중간 특징을 증류해 <b>700M 파라미터(SDXL 대비 약 1/3~1/4)</b>로 압축, 1024×1024 이미지를 1초 만에 생성합니다. 이 과정에서 "어떤 데이터로 증류하느냐"가 성능을 좌우한다는 데이터 중심적 교훈이 나왔습니다.</p>`,
+    refs:[{t:'Distilling the Knowledge in a Neural Network (Hinton)',u:'https://arxiv.org/abs/1503.02531'},{t:'KOALA 프로젝트 페이지',u:'https://youngwanlee.github.io/KOALA/'}]},
+  mtmc:{name:'다중 표적·다중 카메라 추적',en:'Multi-Target Multi-Camera (MTMC) Tracking',tag:'비전 과제',
+    short:'여러 대의 카메라에 걸쳐 여러 사람의 동선을 끊김 없이 추적하는 과제.',
+    body:`<p>단일 카메라 추적(MOT)을 넘어, 사람이 카메라 A에서 사라져 카메라 B에 나타나도 <b>같은 사람임을 인식(re-identification)</b>해 추적을 이어가야 합니다. 시점·조명·해상도가 카메라마다 달라 매우 어렵습니다.</p>
+    <p>MTMMC 데이터셋은 여기에 <b>열화상·다층 건물·실내외 혼합</b>까지 더한 현존 최대급 실세계 벤치마크입니다. 팬데믹 시 확진자 동선 추적 같은 공공 안전 응용을 겨냥했습니다.</p>`,
+    refs:[{t:'MTMMC (CVPR 2024)',u:'https://arxiv.org/abs/2403.20225'},{t:'프로젝트 페이지',u:'https://sites.google.com/view/mtmmc'}]},
+  rgbt:{name:'RGB-T (열화상 융합)',en:'RGB-Thermal Fusion',tag:'센서 융합',
+    short:'일반 카메라(RGB)와 열화상 카메라(Thermal)를 결합해 어두운 곳에서도 사람을 인식하는 기술.',
+    body:`<p>열화상은 체온을 감지하므로 <b>조명이 전혀 없어도</b> 사람을 또렷이 포착합니다. 반대로 질감·색 정보는 RGB가 우월하죠. 둘을 융합하면 전천후 인식이 가능합니다.</p>
+    <p>MTMMC는 <b>동축 광학계(coaxial optics)</b> — 두 센서가 같은 광축을 공유하는 특수 카메라 — 로 촬영해 RGB와 열화상이 픽셀 단위로 정렬된 희귀한 데이터를 제공합니다.</p>`,
+    refs:[{t:'MTMMC (CVPR 2024)',u:'https://arxiv.org/abs/2403.20225'}]},
+  semiauto:{name:'준자동 라벨링',en:'Semi-Automatic Labeling',tag:'데이터 구축',
+    short:'모델이 1차 라벨을 만들고 사람이 검수·수정만 하는 라벨링 방식. 비용을 수 배 절감.',
+    body:`<p>단일 카메라 추적 모델이 먼저 박스·ID를 자동 생성하면, 어노테이터는 처음부터 그리는 대신 <b>오류만 고칩니다</b>. 여기에 "이 사람이 이 시간에 여기 있을 수 있는가" 같은 <b>과제 특화 시간 제약</b>으로 라벨을 자동 검증해 품질을 높입니다.</p>
+    <p>MTMMC처럼 300명 이상의 어노테이터가 투입되는 초대형 프로젝트에서는 라벨링 파이프라인의 효율이 곧 프로젝트의 성패입니다.</p>`,
+    refs:[{t:'MTMMC (CVPR 2024)',u:'https://arxiv.org/abs/2403.20225'}]},
+  scaling:{name:'스케일링 법칙',en:'Scaling Laws',tag:'학습 이론',
+    short:'데이터·모델·연산량을 키울수록 성능이 예측 가능한 곡선으로 좋아진다는 경험 법칙.',
+    body:`<p>OpenAI의 연구(Kaplan et al., 2020) 이후 "더 많은 데이터 + 더 큰 모델 = 더 좋은 성능"이 정량적 법칙으로 자리잡았고, GPT 시리즈 성공의 이론적 토대가 됐습니다.</p>
+    <p>합성 데이터에도 스케일링이 적용될까요? <b>"지금은 부분적으로만(for now)"</b>이 답입니다. 합성 이미지는 실제 이미지보다 스케일링 효율이 낮은데, 주원인은 텍스트와 이미지 간 <b>개념 불일치(concept mismatch)</b> — 프롬프트와 다른 내용이 생성되는 문제입니다. T2I 모델 선택, 낮은 CFG, 다양한 프롬프트로 완화할 수 있습니다.</p>`,
+    refs:[{t:'Scaling Laws for Neural LM (Kaplan et al.)',u:'https://arxiv.org/abs/2001.08361'},{t:'Scaling Laws of Synthetic Images (CVPR 2024)',u:'https://arxiv.org/abs/2312.04567'}]},
+  w2s:{name:'약-강 학습',en:'Weak-to-Strong Learning',tag:'학습 전략',
+    short:'불완전한(약한) 감독 신호·모델들로부터 더 강한 모델을 길러내는 학습 패러다임.',
+    body:`<p>여러 모델이 만든 다소 불완전한 합성 데이터와 의사 라벨(약한 신호)이라도, 잘 설계된 학습 방법과 결합하면 개별 교사 모델들을 뛰어넘는 강한 모델을 만들 수 있다는 발상입니다.</p>
+    <p>발표자의 ECCV 2024 논문 제목이 바로 "Weak-to-Strong Compositional Learning"입니다. 생성 데이터의 <b>밀집 변형(dense variation) 간 대비</b>와 <b>설명문의 구조적 의미</b>를 활용하는 데이터 인지적(data-aware) 학습법으로, 노이즈 있는 합성 데이터에서도 구성적 이해 능력을 길러냅니다.</p>`,
+    refs:[{t:'Weak-to-Strong Compositional Learning (ECCV 2024)',u:'https://arxiv.org/abs/2408.05363'},{t:'Weak-to-Strong Generalization (OpenAI)',u:'https://arxiv.org/abs/2312.09390'}]},
+  tts:{name:'테스트 타임 스케일링',en:'Test-Time Scaling',tag:'학습 이론',
+    short:'추론 시점에 더 많은 연산(더 길게 생각하기)을 투입해 성능을 높이는 기법.',
+    body:`<p>훈련을 더 시키는 대신, 답을 낼 때 모델이 <b>더 오래 추론(chain-of-thought)</b>하게 하여 성능을 끌어올립니다. OpenAI o1 계열의 핵심 아이디어입니다.</p>
+    <p>s1 논문은 <b>고품질 1,000개 샘플</b>만으로 미세조정 + "Wait" 토큰으로 생각을 연장하는 단순한 방법으로 강력한 추론 성능을 달성해, "데이터 품질 > 수량" 교훈의 LLM 버전 증거가 됐습니다.</p>`,
+    refs:[{t:'s1: Simple test-time scaling',u:'https://arxiv.org/abs/2501.19393'}]},
+  agentic:{name:'에이전틱 AI',en:'Agentic AI',tag:'미래 기술',
+    short:'스스로 계획을 세우고 도구를 사용하며 목표를 달성하는 자율 AI 시스템.',
+    body:`<p>단발성 질의응답을 넘어, LLM이 <b>계획 수립 → 도구 호출 → 결과 관찰 → 재계획</b>의 루프를 자율적으로 도는 시스템입니다. 검색, 코드 실행, 외부 모델 호출 등을 스스로 조합합니다.</p>
+    <p>이 강의의 비전은 에이전틱 AI가 <b>데이터 구축 사이클 전체(검색→생성→시뮬레이션→평가→피드백)를 자동화</b>하는 것 — 즉 사람 개입 없이 데이터와 모델이 함께 진화하는 <b>자기 진화(self-evolving) AI</b>입니다. 현재는 Evaluation Agent처럼 평가 단계 일부만 자동화된 초기 단계입니다.</p>`,
+    refs:[{t:'Evaluation Agent',u:'https://arxiv.org/abs/2412.09645'},{t:'ReAct: Reasoning and Acting',u:'https://arxiv.org/abs/2210.03629'}]},
+  clip:{name:'CLIP / 대조 학습',en:'Contrastive Language-Image Pre-training',tag:'기반 모델',
+    short:'이미지와 텍스트를 같은 의미 공간에 매핑해 "글로 이미지를 검색"할 수 있게 한 모델.',
+    body:`<p>4억 쌍의 이미지-텍스트를 "맞는 쌍은 가깝게, 틀린 쌍은 멀게"(대조 학습) 배치해, 이미지와 텍스트가 <b>같은 임베딩 공간</b>을 공유하게 만들었습니다.</p>
+    <p>Stable Diffusion의 텍스트 조건화, GLIP의 grounding, 제로샷 분류 등 이 강의에 등장하는 거의 모든 비전-언어 기술의 토대입니다. CLIP 자체가 "모델 구조보다 <b>웹 스케일 데이터</b>가 혁신이었다"는 데이터 중심 사례이기도 합니다.</p>`,
+    refs:[{t:'CLIP (OpenAI, 2021)',u:'https://arxiv.org/abs/2103.00020'}]},
+};
+
+/* ---------- 인라인 용어 자동 연결용: 기법 카드 ---------- */
+const TECHS = [
+  {n:'이상치 탐지·제거',e:'Outlier Detection & Removal',d:'데이터셋 속 비정상 샘플(찢어진 이미지, 엉뚱한 값)을 찾아 제거합니다. 비정상 데이터 하나가 모델 전체를 왜곡시킬 수 있습니다.'},
+  {n:'오류 탐지·수정',e:'Error Detection & Correction',d:'잘못된 값이나 라벨을 찾아 고칩니다. 유명 테스트셋 10개에도 라벨 오류가 만연하다는 연구가 이 기법의 필요성을 보여줍니다.'},
+  {n:'데이터 증강',e:'Data Augmentation',d:'회전·자르기·색 변환 등으로 데이터를 늘려 사전 지식을 주입합니다. "고양이는 뒤집어도 고양이"라는 불변성을 모델에 가르치는 셈입니다.'},
+  {n:'특징 공학·선택',e:'Feature Engineering & Selection',d:'데이터의 표현 방식을 조작합니다. 어떤 특징을 모델에 보여줄지 고르는 것만으로 성능이 크게 달라집니다.'},
+  {n:'합의 라벨 수립',e:'Consensus Labels',d:'여러 크라우드소싱 어노테이터의 라벨이 엇갈릴 때, 진짜 정답을 통계적으로 추정합니다.'},
+  {n:'능동 학습',e:'Active Learning',d:'라벨링 예산이 한정될 때, "어떤 데이터를 라벨링하면 가장 도움될지"를 모델이 직접 고릅니다. 가장 헷갈려하는 샘플부터 라벨링하는 식입니다.'},
+  {n:'커리큘럼 학습',e:'Curriculum Learning',d:'쉬운 예제부터 어려운 예제 순으로 학습 순서를 정렬합니다. 사람의 교육과정에서 따온 아이디어입니다 (Bengio et al., ICML 2009).'},
+];
+
+/* ---------- AI 라이프사이클 ---------- */
+const PIPE = [
+  {n:'01',nm:'문제 정의',cls:'data-side',d:'<b>무엇을 풀 것인가.</b> MTMMC의 경우: 팬데믹 상황에서 확진자의 동선을 다중 카메라로 추적하는 문제를 새로 정의했습니다. 표준 설정(단일 카메라·RGB)을 넘어서는 문제 설계 자체가 연구의 절반입니다.'},
+  {n:'02',nm:'범위 설정',cls:'data-side',d:'<b>어디까지 풀 것인가.</b> 어떤 환경(병원·캠퍼스·공장), 어떤 센서(RGB+열화상+3D+비콘), 어떤 규모로 할지 경계를 긋습니다.'},
+  {n:'03',nm:'데이터 준비',cls:'data-side',d:'<b>데이터를 모은다.</b> 하드웨어 설계, 환경 구축, 촬영까지. MTMMC는 16대 카메라를 캠퍼스와 공장에 설치하고 600명 이상의 배우를 동원해 6개월간 수집했습니다.'},
+  {n:'04',nm:'데이터 라벨링',cls:'data-side',d:'<b>정답을 단다.</b> 300명 이상의 어노테이터가 6개월간 작업했습니다. 비용 절감을 위해 모델이 초벌 라벨을 만들고 사람이 검수하는 준자동 라벨링 + 시간 제약 기반 자동 검증을 사용했습니다.'},
+  {n:'05',nm:'모델 학습',cls:'model-side',d:'<b>모델을 훈련한다.</b> 모델 중심 AI가 집중하는 단계. 하지만 데이터가 부실하면 여기서 아무리 노력해도 한계가 명확합니다 — garbage in, garbage out.'},
+  {n:'06',nm:'모델 평가',cls:'model-side',d:'<b>성능을 검증한다.</b> 단순 정확도를 넘어 "언제, 왜 실패하는가"를 알아야 데이터 피드백이 가능합니다. 발표자는 LLM 기반 자동 평가로 실패 유형을 분류했습니다.'},
+  {n:'07',nm:'배포',cls:'deploy-side',d:'<b>현실에 내보낸다.</b> MTMMC 기반 시스템은 병원에서 사람 대비 6.5배 빠르고 63.4%p 더 정확하게 환자 동선을 추적했습니다. 배포 후의 실패 사례는 다시 데이터 개선의 재료가 됩니다.'},
+];
+
+/* ---------- KCL 4단계 ---------- */
+const KCL = [
+  {nm:'협업 데이터 생성',en:'Collaborative Data Generation',
+   d:'<b>여러 AI 모델이 분업해 데이터를 만든다.</b> LLM은 다양한 설명문을 쓰고, 텍스트-이미지 확산 모델은 그 설명을 이미지로 바꾸고, 객체 탐지기 + MLLM은 박스 라벨을 답니다. 각 모델의 전문성을 모아 단일 모델은 만들 수 없는 데이터를 생성합니다.'},
+  {nm:'데이터 인지적 모델 학습',en:'Data-aware Model Training',
+   d:'<b>생성 데이터의 특성에 맞춘 학습법을 설계한다.</b> ① 같은 장면의 밀집 변형(dense variation)끼리 비교하며 설명 인지력을 기르고, ② 설명문의 구조적 의미(textual semantics)에서 구성적 이해를 학습합니다. 합성 데이터는 "그냥 섞어 넣는" 것보다 특성을 활용할 때 훨씬 효과적입니다.'},
+  {nm:'종합 평가로 실패 발견',en:'Comprehensive Evaluation',
+   d:'<b>모델이 정확히 언제 실패하는지 찾는다.</b> 멀티모달 이해의 유형을 정의하고, LLM 기반 평가 프레임워크로 유형별 성능을 자동 측정합니다. "평균 점수"가 아니라 "실패의 지도"를 그리는 것이 목적입니다.'},
+  {nm:'데이터로 피드백',en:'Feedback on Data',
+   d:'<b>실패 유형을 겨냥한 데이터를 다시 생성한다.</b> 평가에서 드러난 약점(failure mode)에 맞춰 약점 표적 합성 데이터(weakness-targeted synthetic data)를 만들어 훈련셋에 추가합니다. 이 피드백 한 바퀴로 전체 AP가 27.3 → 33.7로 추가 상승했습니다.'},
+];
+
+/* ---------- 데이터 생성 파이프라인 스테퍼 ---------- */
+const GEN_STEPS = [
+  {t:'STEP 1 · LLM',h:'LLM이 다양한 설명문을 생성',
+   b:`<p>카테고리 풀(버스, 소, 고양이…)에서 개념을 뽑아 LLM에 주면, <b>속성·관계·맥락에 대한 상식</b>을 동원해 자연스럽고 복잡도가 제어된 설명문을 대량 생산합니다.</p>
+   <div class="example-box"><span class="tag">LLM 생성 예시 — 카테고리: [Bus]</span>
+   "미래형 전기 버스가 스마트 시티의 거리를 달린다" · "노란 스쿨버스가 교외 초등학교 앞에서 대기한다" · "음악 축제에서 형형색색 연기에 둘러싸인 버스" · "푸드트럭으로 개조된 빈티지 버스"…</div>
+   <p>사람 어노테이터의 "얼룩말", "왼쪽 얼룩말" 같은 빈약한 설명과 비교해 보세요. <b>다양성과 풍부함이 차원이 다릅니다.</b></p>`},
+  {t:'STEP 2 · 확산 모델',h:'텍스트-이미지 확산 모델이 이미지로 변환',
+   b:`<p>생성된 설명문을 텍스트-이미지 확산 모델에 넣어 <b>이미지-설명 쌍</b>을 만듭니다.</p>
+   <p>장점 ① <b>스케일업이 쉽다</b> — 사람 없이 무한 생산. ② <b>희소 데이터도 만들 수 있다</b> — "연기에 둘러싸인 버스"처럼 현실에서 촬영하기 힘든 장면도 자유자재.</p>
+   <p>주의: guidance scale을 낮춰 다양성을 확보하는 것이 학습용으로는 유리합니다.</p>`},
+  {t:'STEP 3 · 자동 라벨링',h:'탐지기 + MLLM의 과제 분해로 박스 라벨링',
+   b:`<p>남은 난제: <i>"아보카도가 도마 위에 놓여 있다"</i>라는 설명에 맞는 <b>정확한 박스</b>를 누가 그리나?</p>
+   <p>해법은 <b>과제 분해(task decomposition)</b>입니다. 복잡한 라벨링을 두 개의 쉬운 문제로 쪼갭니다:</p>
+   <div class="example-box"><span class="tag">멀티모달 도구 체인</span>
+   ① 탐지기: 설명에서 주어("avocado")만 추출해 후보 박스를 모두 찾는다 →
+   ② MLLM: 이미지에 후보 박스를 시각 프롬프팅으로 표시하고, 어느 박스가 설명 전체("도마 위에 놓인")와 맞는지 판별한다</div>
+   <p>탐지기의 <b>위치 찾기 능력</b>과 MLLM의 <b>구성적 이해 능력</b>을 결합한 자동 라벨링입니다.</p>`},
+  {t:'STEP 4 · 학습',h:'데이터 특성에 맞춘 학습 (Data-aware Training)',
+   b:`<p>완성된 합성 데이터를 그냥 섞어 넣지 않고, 그 <b>특성을 활용하는 학습법</b>을 씁니다.</p>
+   <p>① <b>밀집 변형에서 배우기</b> — 같은 개념의 다양한 변형 이미지들을 대비시켜 "설명의 미세한 차이"에 민감해지도록. ② <b>텍스트 구조에서 배우기</b> — 설명문의 의미 구조(주어·속성·관계)를 활용해 구성적 이해를 강화.</p>
+   <p>그 결과가 ECCV 2024의 "Weak-to-Strong Compositional Learning" — 약한(불완전한) 합성 데이터로부터 강한 모델을 길러내는 방법입니다.</p>`},
+];
+
+/* ---------- MCQ 퀴즈 ---------- */
+const QUIZ = [
+  {q:'Data-Centric AI의 정의로 가장 알맞은 것은?',
+   o:['최신 GPU로 더 큰 모델을 학습하는 접근','모델을 고정하고 훈련 데이터를 체계적으로 개선하는 접근','데이터를 고정하고 모델 구조를 개선하는 접근','데이터 없이 학습하는 접근'],
+   a:1,exp:'<b>모델은 무엇이든 좋다 — 데이터를 알고리즘적으로 개선하라.</b> 반대로 데이터를 고정하고 모델을 바꾸는 것이 전통적 Model-Centric AI입니다.'},
+  {q:'MTMMC를 병원에 배포했을 때, 완전 자동 추적의 성과는?',
+   o:['사람보다 빠르지만 부정확했다','사람과 비슷한 수준이었다','17분 만에 97.9% 정확도 — 사람(110분, 34.6%)을 압도했다','자동화에 실패했다'],
+   a:2,exp:'<b>6.5배 빠르고 +63.4%p 정확.</b> 잘 구축된 데이터로 학습한 모델은 사람의 수동 작업을 크게 능가할 수 있습니다.'},
+  {q:'합성 이미지로 모델을 학습할 때, guidance scale(CFG)을 낮추면?',
+   o:['이미지가 다양해져 학습 성능이 좋아진다','프롬프트 충실도가 올라가 항상 좋다','이미지가 흐려져 무조건 나쁘다','아무 영향이 없다'],
+   a:0,exp:'<b>낮은 CFG → 다양성 ↑ → 학습 성능 ↑.</b> "보기 좋은 이미지"와 "좋은 훈련 데이터"는 다릅니다. 다양성이 합성 데이터의 핵심 화폐입니다.'},
+  {q:'KOALA의 훈련 데이터 실험이 주는 교훈은?',
+   o:['데이터는 무조건 많을수록 좋다','800만 장의 저해상도 데이터가 49만 장의 고품질 데이터를 이겼다','49만 장의 고해상도+상세캡션 데이터가 800만 장을 이겼다 — 품질 > 수량','캡션은 짧을수록 좋다'],
+   a:2,exp:'<b>품질 > 수량 (적어도 지금은).</b> 같은 교훈이 Stable Video Diffusion(영상), s1(LLM 추론, 단 1,000개 샘플)에서도 반복됩니다.'},
+];
+
+/* ---------- 참고문헌 ---------- */
+const REFS = [
+  {n:'CVPR 2024',t:'MTMMC: A Large-Scale Real-World Multi-Modal Camera Tracking Benchmark',v:'Woo, Park, Shin, Kim, Kweon',u:'https://arxiv.org/abs/2403.20225'},
+  {n:'ECCV 2024',t:'Weak-to-Strong Compositional Learning from Generative Models for Language-based Object Detection',v:'Park et al.',u:'https://arxiv.org/abs/2408.05363'},
+  {n:'NeurIPSW 2024',t:'A Multimodal Chain of Tools for Described Object Detection',v:'Park et al.',u:'https://scholar.google.com/scholar?q=A+Multimodal+Chain+of+Tools+for+Described+Object+Detection'},
+  {n:'IJCV',t:'Learning Compositionality from Multifaceted Synthetic Data for Language-based Object Detection',v:'Park et al.',u:'https://scholar.google.com/scholar?q=Learning+Compositionality+from+Multifaceted+Synthetic+Data+for+Language-based+Object+Detection'},
+  {n:'NeurIPS 2024',t:'KOALA: Empirical Lessons Toward Memory-Efficient and Fast Diffusion Models for Text-to-Image Synthesis',v:'Lee, Park, Cho, Lee, Hwang',u:'https://youngwanlee.github.io/KOALA/'},
+  {n:'ICCV 2025',t:'CaptionSmiths: Flexibly Controlling Language Pattern in Image Captioning',v:'Saito, Kim, Park, Hashimoto, Ushiku',u:'https://scholar.google.com/scholar?q=CaptionSmiths+Flexibly+Controlling+Language+Pattern+in+Image+Captioning'},
+  {n:'CVPR 2024',t:'Learning Vision from Models Rivals Learning Vision from Data (SynCLR)',v:'Tian et al.',u:'https://arxiv.org/abs/2312.17742'},
+  {n:'CVPR 2024',t:'Scaling Laws of Synthetic Images for Model Training … for Now',v:'Fan et al.',u:'https://arxiv.org/abs/2312.04567'},
+  {n:'CVPR 2016',t:'Deep Residual Learning for Image Recognition (ResNet)',v:'He et al.',u:'https://arxiv.org/abs/1512.03385'},
+  {n:'ICML 2009',t:'Curriculum Learning',v:'Bengio et al.',u:'https://dl.acm.org/doi/10.1145/1553374.1553380'},
+  {n:'JAIR 2021',t:'Confident Learning: Estimating Uncertainty in Dataset Labels',v:'Northcutt et al.',u:'https://arxiv.org/abs/1911.00068'},
+  {n:'NeurIPS-DB',t:'Pervasive Label Errors in Test Sets Destabilize ML Benchmarks',v:'Northcutt et al.',u:'https://arxiv.org/abs/2103.14749'},
+  {n:'Stability AI',t:'Stable Video Diffusion: Scaling Latent Video Diffusion Models to Large Datasets',v:'Blattmann et al.',u:'https://arxiv.org/abs/2311.15127'},
+  {n:'2025',t:'s1: Simple Test-Time Scaling',v:'Muennighoff et al.',u:'https://arxiv.org/abs/2501.19393'},
+  {n:'NeurIPS 2025',t:'SwS: Self-aware Weakness-driven Problem Synthesis in RL for LLM Reasoning',v:'—',u:'https://scholar.google.com/scholar?q=SwS+Self-aware+Weakness-driven+Problem+Synthesis'},
+  {n:'2024',t:'Evaluation Agent: Efficient and Promptable Evaluation Framework for Visual Generative Models',v:'—',u:'https://arxiv.org/abs/2412.09645'},
+  {n:'AI2',t:'Molmo: Open Models, Open Data (LVLM 개방성)',v:'Allen Institute for AI',u:'https://allenai.org/blog/molmo'},
+  {n:'벤치마크',t:'OmniLabel Challenge — 발표자 팀 3위 / 68팀 (ECCV 2024)',v:'omnilabel.org',u:'https://www.omnilabel.org/'},
+];
+
+/* ---------- 챗봇 지식 베이스 ---------- */
+const KB = [
+  {k:['데이터 중심','data-centric','데이터센트릭','정의','뭐야','무엇'],
+   q:'Data-Centric AI가 뭔가요?',
+   a:'<b>모델이 아니라 훈련 데이터를 체계적으로 개선해 성능을 높이는 접근</b>입니다. 두 형태가 있어요: ① 데이터를 <b>이해</b>해 모델을 개선(예: 커리큘럼 학습 — 쉬운 것부터 학습), ② 데이터를 <b>수정</b>해 모델을 개선(예: 신뢰 학습 — 오라벨 제거). 전통 ML은 데이터를 고정하고 모델을 바꾸는 모델 중심이었지만, 현실 데이터는 지저분하고 라벨 오류가 만연해서 "데이터에 투자하는 것"이 더 가치 있다는 패러다임입니다.',
+   s:'§00 핵심 개념'},
+  {k:['모델 중심','model-centric','차이','비교'],
+   q:'모델 중심 AI와 뭐가 다른가요?',
+   a:'<b>무엇을 고정하고 무엇을 바꾸느냐</b>의 차이입니다. 모델 중심: 데이터(벤치마크)를 고정 → 구조·하이퍼파라미터·손실 함수를 개선. 데이터 중심: 모델을 고정 → 데이터를 알고리즘적으로 개선. 학교에서 배우는 ML은 대부분 모델 중심이지만, 실무에서는 "데이터를 고치는 것"의 효과가 더 큰 경우가 많습니다 (garbage in, garbage out).',
+   s:'§00 핵심 개념'},
+  {k:['mtmmc','다중 카메라','추적','감시','병원','covid','팬데믹'],
+   q:'MTMMC가 무엇인가요?',
+   a:'<b>MTMMC (CVPR 2024)</b>는 다중 카메라·다중 모달(RGB+열화상) 사람 추적을 위한 대규모 실세계 벤치마크입니다. KAIST 캠퍼스와 공장에 16대 카메라를 설치하고, 실내외·다층 환경에서 600명 이상의 배우를 촬영했습니다. 병원에 배포해 COVID-19 환자 동선을 추적한 결과, 완전 자동 추적이 사람보다 <b>6.5배 빠르고(17분 vs 110분) 정확도는 97.9% vs 34.6%</b>로 압도적이었습니다.',
+   s:'§01 MTMMC'},
+  {k:['비용','돈','million','달러','얼마','시간이','기간'],
+   q:'수동 데이터 수집은 비용이 얼마나 드나요?',
+   a:'MTMMC 기준: 배우 600+명, 어노테이터 300+명, 연구원 40+명이 참여했고, 데이터 수집 6개월 + 라벨링 6개월 + 모델 개발 1년 + 배포 1년이 걸렸으며, <b>데이터에 $2M, 개발에 $5M — 총 약 $7M</b>이 들었습니다. 프라이버시·라이선스 문제는 덤이죠. 그래서 결론이 "복잡한 과제의 대규모 수동 데이터 구축은 현실적으로 거의 불가능하다"이고, 자동 데이터 생성 연구로 이어집니다.',
+   s:'§01 MTMMC'},
+  {k:['합성','synthetic','자동 생성','데이터 생성','생성 모델','생성형'],
+   q:'생성 모델로 어떻게 데이터를 만드나요?',
+   a:'핵심은 <b>생성 모델을 "데이터 생성 에이전트"로 쓰는 것</b>입니다. 파이프라인: ① LLM이 카테고리별로 다양하고 풍부한 설명문 생성("음악 축제에서 연기에 둘러싸인 버스") → ② 텍스트-이미지 확산 모델이 설명을 이미지로 변환 → ③ 탐지기+MLLM의 과제 분해로 박스 자동 라벨링 → ④ 데이터 특성에 맞춘 학습. SynCLR(CVPR 2024)은 합성 데이터만으로 실데이터 학습에 필적함을 보였습니다.',
+   s:'§02 자동 생성'},
+  {k:['kcl','지식 통합','knowledge consolidated','프레임워크','4단계'],
+   q:'지식 통합 학습(KCL)이란?',
+   a:'흩어져 있는 AI 모델들(LLM, MLLM, 탐지기, 생성 모델)의 전문 지식을 하나의 모델로 모으는 발표자의 프레임워크입니다. 4단계 순환: ① <b>협업 데이터 생성</b>(모델들이 분업해 데이터 제작) → ② <b>데이터 인지적 학습</b>(생성 데이터 특성에 맞춘 학습법) → ③ <b>종합 평가</b>(LLM 기반으로 실패 유형 발견) → ④ <b>데이터 피드백</b>(약점 겨냥 데이터 재생성). ④가 ①로 되돌아가는 순환 구조가 핵심입니다.',
+   s:'§02 KCL'},
+  {k:['서술','언어 기반','described','object detection','객체 탐지','dod','glip'],
+   q:'서술 기반 객체 탐지가 뭔가요?',
+   a:'"수영장에 뛰어드는 사람을 찾아줘"처럼 <b>자유 문장으로 객체를 찾는 과제</b>입니다. 비전(위치)+언어(문장 이해)+멀티모달(연결) 지식이 모두 필요합니다. 기존 모델 GLIP은 짧은 설명에서 29.4였던 성능이 긴 설명에서 8.2로 급락했는데, 원인은 모델이 아니라 <b>짧고 빈약한 설명만 있는 훈련 데이터</b>였습니다. 그래서 데이터 자동 생성으로 해결한 것이죠.',
+   s:'§02 자동 생성'},
+  {k:['라벨','labeling','박스','annotation','어노테이션','과제 분해','task decomposition'],
+   q:'생성한 이미지에 라벨은 어떻게 붙이나요?',
+   a:'<b>과제 분해(task decomposition)</b>로 해결합니다. "아보카도가 도마 위에 놓여 있다"에 정확한 박스를 붙이려면: ① 객체 탐지기가 주어 단어("avocado")만으로 후보 박스를 전부 찾고 → ② MLLM이 시각 프롬프팅(이미지에 박스+번호 표시)으로 어느 후보가 설명 전체와 일치하는지 판별합니다. 탐지기의 위치 찾기와 MLLM의 구성적 이해를 결합한 자동 라벨링입니다.',
+   s:'§02 STEP 3'},
+  {k:['성능','결과','ap','효과','얼마나 좋아'],
+   q:'합성 데이터의 효과는 어느 정도인가요?',
+   a:'실데이터 550만 장(탐지 0.7M+그라운딩 0.8M+캡션 4M)으로 22.3 AP였던 모델이, <b>단 5.8만 장(1% 수준)의 생성 데이터를 더하자 27.3 AP(+5.0)</b>, 피드백 데이터까지 더하자 <b>33.7 AP(+5.6 추가)</b>로 뛰었습니다. 긴 설명 성능은 12.4 → 25.6으로 2배 이상. 이 모델은 OmniLabel 챌린지(ECCV 2024)에서 68팀 중 3위(2위가 Google&Meta)를 했습니다. 핵심은 양이 아니라 <b>"빠져 있던 유형의 데이터를 채우는 것"</b>입니다.',
+   s:'§02 결과'},
+  {k:['품질','quality','수량','quantity','양','vs'],
+   q:'품질과 수량 중 무엇이 중요한가요?',
+   a:'강의의 답: <b>"현재로서는 품질이 더 중요해 보인다."</b> 증거 3가지 — ① KOALA: 같은 800만 이미지라도 모델 생성 상세 캡션(72단어)이 크롤링 텍스트(13단어)보다 좋았고, 고해상도+상세캡션 49만 장이 저해상도 800만 장을 이겼습니다. ② Stable Video Diffusion: 데이터 큐레이션이 영상 생성 품질을 갈랐습니다. ③ s1: 엄선된 1,000개 샘플만으로 LLM 추론 능력을 끌어올렸습니다.',
+   s:'§03 품질 vs 수량'},
+  {k:['koala','코알라','경량','빠른','diffusion','확산 모델 경량'],
+   q:'KOALA는 어떤 연구인가요?',
+   a:'<b>KOALA (NeurIPS 2024)</b>는 지식 증류로 SDXL을 압축한 경량 텍스트-이미지 확산 모델로, <b>700M 파라미터로 1024×1024 이미지를 1초 만에</b> 생성합니다. 이 연구의 데이터 중심적 교훈: 훈련 데이터의 캡션 품질(상세할수록 좋음)과 이미지 해상도가 수량보다 중요했습니다.',
+   s:'§03 KOALA'},
+  {k:['captionsmiths','캡션','슬라이더','제어','길이'],
+   q:'CaptionSmiths는 무엇인가요?',
+   a:'<b>CaptionSmiths (ICCV 2025 Highlight)</b>는 캡션의 길이·서술성·고유성을 슬라이더처럼 <b>연속적으로 제어</b>하는 이미지 캡셔닝 모델입니다. 비결은 데이터 중심 해법 — 훈련 캡션마다 규칙 기반 계산기로 길이/서술성/고유성 점수를 매겨 조건으로 붙여 학습시켰습니다. 모델 구조 변경 없이 데이터 가공만으로 새로운 능력을 만든 사례입니다.',
+   s:'§03 CaptionSmiths'},
+  {k:['에이전트','agentic','agent','미래','자기 진화','self-evolving'],
+   q:'에이전틱 AI와 자기 진화 AI란?',
+   a:'미래 비전은 에이전틱 AI가 <b>데이터 구축 사이클 전체를 자동화</b>하는 것입니다: 관련 데이터 검색 → 생성 모델로 생성 → 자동 시뮬레이션 → 평가·피드백. 사람 개입 없이 데이터와 모델이 함께 진화하는 <b>자기 진화(self-evolving) AI</b>죠. 현재는 Evaluation Agent처럼 T2I 평가 단계만 자동화한 초기 연구 수준이라, 열려 있는 연구 기회가 많습니다.',
+   s:'§04 미래 과제'},
+  {k:['cfg','guidance','가이던스','다양성'],
+   q:'Guidance scale이 왜 중요한가요?',
+   a:'CFG(classifier-free guidance) scale은 확산 모델이 <b>텍스트를 얼마나 충실히 따를지</b> 조절하는 다이얼입니다. 높으면 프롬프트에 충실하지만 이미지가 비슷해지고, 낮으면 다양해집니다. 합성 훈련 데이터 관점에서는 <b>낮은 CFG가 유리</b> — 다양성이 학습 성능을 높이기 때문입니다. "예쁜 이미지 ≠ 좋은 훈련 데이터"라는 교훈입니다.',
+   s:'§02 스케일링'},
+  {k:['발표자','박관용','교수','누구'],
+   q:'발표자는 누구인가요?',
+   a:'<b>박관용 교수</b> — 서울시립대 컴퓨터과학부 조교수(2025.3~), KAIST 박사(Robotics and Computer Vision Lab), ETRI Visual Intelligence Lab 연구원, Adobe Research 인턴을 거쳤습니다. WACV 2023 최우수 학생논문상(1,577편 중), Qualcomm Innovation Fellowship, OmniLabel 챌린지 3위 등을 수상했습니다. 연구 키워드: Computer Vision, Data-Centric AI, Multimodal AI, Generative AI.',
+   s:'표지·약력'},
+  {k:['스케일링','scaling','법칙','개념 불일치','mismatch'],
+   q:'합성 데이터도 스케일링 법칙을 따르나요?',
+   a:'"지금은 부분적으로만(...for Now)"이 답입니다. 합성 이미지는 실데이터보다 스케일링 효율이 낮은데, 주원인은 <b>개념 불일치(concept mismatch)</b> — 프롬프트와 다른 내용이 생성되는 문제입니다. 좌우하는 3요소: ① T2I 모델 선택(SD/Imagen/Muse), ② 낮은 guidance scale(다양성↑), ③ 다양한 텍스트 프롬프트. (Scaling Laws of Synthetic Images, CVPR 2024)',
+   s:'§02 스케일링'},
+  {k:['라벨 오류','label error','테스트셋','오류가'],
+   q:'유명 데이터셋에도 오류가 있나요?',
+   a:'네. Northcutt 등의 연구에 따르면 ImageNet을 포함한 <b>가장 많이 쓰이는 테스트셋 10개에 평균 3.3%의 라벨 오류</b>가 만연합니다. 테스트셋 오류는 모델 순위 자체를 뒤바꿀 수 있어서, "데이터를 고치는 일"이 연구의 신뢰성 문제이기도 합니다. 신뢰 학습(confident learning) 같은 기법으로 자동 탐지할 수 있습니다.',
+   s:'§00 핵심 개념'},
+];
+
+/* ==================================================================
+   렌더링 & 인터랙션
+================================================================== */
+
+/* 기법 카드 */
+const techGrid=document.getElementById('techGrid');
+TECHS.forEach(t=>{
+  const d=document.createElement('div');d.className='tech';
+  d.innerHTML=`<div class="t-head"><div><span class="t-name">${t.n}</span><span class="t-en">${t.e}</span></div><span class="t-arrow">▶</span></div><div class="t-body"><p>${t.d}</p></div>`;
+  d.onclick=()=>d.classList.toggle('open');
+  techGrid.appendChild(d);
+});
+
+/* 파이프라인 */
+const pipeEl=document.getElementById('pipeline'),pipeDesc=document.getElementById('pipeDesc');
+PIPE.forEach((s,i)=>{
+  const d=document.createElement('div');d.className='step '+s.cls;
+  d.innerHTML=`<div class="n">${s.n}</div><div class="nm">${s.nm}</div>`;
+  d.onclick=()=>{
+    pipeEl.querySelectorAll('.step').forEach(x=>x.classList.remove('on'));
+    d.classList.add('on');pipeDesc.innerHTML=s.d;
+  };
+  pipeEl.appendChild(d);
+  if(i===2)setTimeout(()=>d.click(),0); // 기본 선택: 데이터 준비
+});
+
+/* KCL */
+const kclEl=document.getElementById('kcl'),kclDesc=document.getElementById('kclDesc');
+KCL.forEach((s,i)=>{
+  const d=document.createElement('div');d.className='k-step';
+  d.innerHTML=`<div class="k-name">${s.nm}</div><span class="k-en">${s.en}</span>`;
+  d.onclick=()=>{
+    kclEl.querySelectorAll('.k-step').forEach(x=>x.classList.remove('on'));
+    d.classList.add('on');kclDesc.innerHTML=s.d;
+  };
+  kclEl.appendChild(d);
+  if(i===0)setTimeout(()=>d.click(),0);
+});
+
+/* 생성 파이프라인 스테퍼 */
+const genTabs=document.getElementById('genTabs'),genView=document.getElementById('genView');
+GEN_STEPS.forEach((s,i)=>{
+  const b=document.createElement('button');b.className='s-tab'+(i===0?' on':'');b.textContent=s.t;
+  b.onclick=()=>{
+    genTabs.querySelectorAll('.s-tab').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');genView.innerHTML=`<h4>${s.h}</h4>${s.b}`;
+  };
+  genTabs.appendChild(b);
+});
+genView.innerHTML=`<h4>${GEN_STEPS[0].h}</h4>${GEN_STEPS[0].b}`;
+
+/* A vs B 퀴즈 */
+document.querySelectorAll('.duel').forEach(duel=>{
+  const winner=duel.dataset.winner,id=duel.dataset.duel;
+  duel.querySelectorAll('.opt').forEach(opt=>{
+    opt.onclick=()=>{
+      if(duel.classList.contains('done'))return;
+      duel.classList.add('done');
+      duel.querySelectorAll('.opt').forEach(o=>{
+        const isWin=o.dataset.side===winner;
+        o.classList.add(isWin?'win':'lose');
+        o.querySelector('.badge').textContent=isWin?'✓ 더 좋은 데이터':'아쉽지만…';
+      });
+      document.getElementById('duelExp'+id).classList.add('show');
+    };
+  });
+});
+
+/* 캡션 슬라이더 */
+const CAPTIONS=[
+  {g:'0.00 (최소)',t:'“해변의 개.”'},
+  {g:'0.25',t:'“모래 해변 위에 골든리트리버 한 마리가 앉아 있다.”'},
+  {g:'0.50',t:'“햇살이 비치는 모래 해변에서 골든리트리버가 파도를 바라보며 앉아 있고, 뒤로 푸른 바다가 펼쳐져 있다.”'},
+  {g:'0.75',t:'“늦은 오후의 따뜻한 햇살이 내리쬐는 한적한 모래 해변에서, 젖은 털의 골든리트리버 한 마리가 혀를 내민 채 밀려오는 하얀 파도를 바라보고 있다. 발자국이 모래 위에 길게 이어져 있다.”'},
+  {g:'1.00 (최대)',t:'“황금빛 노을이 수평선을 물들이는 늦은 오후, 인적이 드문 넓은 모래 해변에서 바닷물에 젖어 털이 곱슬해진 골든리트리버 한 마리가 행복한 표정으로 혀를 내밀고 앉아, 거품을 일으키며 밀려왔다 빠져나가는 파도를 응시하고 있다. 개의 뒤편으로는 주인과 함께 걸어온 듯한 발자국 두 줄이 길게 이어지고, 멀리 갈매기 떼가 낮게 날고 있다.”'},
+];
+const capSlider=document.getElementById('capSlider'),capText=document.getElementById('capText'),capGauge=document.getElementById('capGauge');
+function updateCap(){
+  const c=CAPTIONS[+capSlider.value];
+  capText.textContent=c.t;capGauge.textContent='조건값 '+c.g;
+}
+capSlider.addEventListener('input',updateCap);updateCap();
+
+/* MCQ 퀴즈 */
+const quizBox=document.getElementById('quizBox');let score=0,answered=0;
+QUIZ.forEach((q,qi)=>{
+  const card=document.createElement('div');card.className='q-card';
+  card.innerHTML=`<div class="q"><span class="qn">Q${qi+1}.</span>${q.q}</div>`;
+  const opts=document.createElement('div');opts.className='opts';
+  q.o.forEach((o,oi)=>{
+    const b=document.createElement('button');b.className='o';b.textContent=o;
+    b.onclick=()=>{
+      if(card.classList.contains('done'))return;
+      card.classList.add('done');answered++;
+      if(oi===q.a){b.classList.add('correct');score++;}
+      else{b.classList.add('wrong');opts.children[q.a].classList.add('correct');}
+      exp.classList.add('show');
+      document.getElementById('quiz-score').textContent=`▸ 점수: ${score} / ${answered}${answered===QUIZ.length?(score===QUIZ.length?' — 완벽합니다! 🎉':' — 틀린 문제의 해설을 읽어보세요'):''}`;
+    };
+    opts.appendChild(b);
+  });
+  const exp=document.createElement('div');exp.className='exp';exp.innerHTML=q.exp;
+  card.appendChild(opts);card.appendChild(exp);quizBox.appendChild(card);
+});
+
+/* 용어집 그리드 + 모달 */
+const glossGrid=document.getElementById('glossGrid');
+Object.entries(TERMS).forEach(([key,t])=>{
+  const b=document.createElement('button');b.className='g-chip';
+  b.innerHTML=`<div class="gn">${t.name}</div><span class="ge">${t.en}</span><br><span class="gt">${t.tag}</span>`;
+  b.onclick=()=>openTerm(key);
+  glossGrid.appendChild(b);
+});
+const modalBg=document.getElementById('modal-bg'),modalContent=document.getElementById('modal-content');
+function openTerm(key){
+  const t=TERMS[key];if(!t)return;
+  modalContent.innerHTML=`
+    <div class="m-tag">FOUNDATION · ${t.tag}</div>
+    <h3>${t.name}</h3><span class="m-en">${t.en}</span>
+    <div class="m-short">${t.short}</div>
+    <div class="m-body">${t.body}</div>
+    <div class="m-refs"><div class="rt">참고 문헌 · 더 깊이 읽기</div>
+      ${t.refs.map(r=>`<a class="cite" href="${r.u}" target="_blank" rel="noopener">${r.t}</a>`).join(' ')}
+    </div>`;
+  modalBg.classList.add('show');document.body.style.overflow='hidden';
+}
+function closeModal(){modalBg.classList.remove('show');document.body.style.overflow='';}
+modalBg.addEventListener('click',e=>{if(e.target===modalBg)closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+/* 본문 인라인 용어 버튼 위임 */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('.term');
+  if(t&&t.dataset.term)openTerm(t.dataset.term);
+});
+
+/* 참고문헌 */
+const refList=document.getElementById('refList');
+REFS.forEach((r,i)=>{
+  const a=document.createElement('a');a.className='ref';a.href=r.u;a.target='_blank';a.rel='noopener';
+  a.innerHTML=`<span class="rn">[${String(i+1).padStart(2,'0')}]</span><span><span class="rt">${r.t}</span><br><span class="rv">${r.n} · ${r.v}</span></span><span class="go">→</span>`;
+  refList.appendChild(a);
+});
+
+/* ---------- 스크롤: 등장 애니메이션 / 진행바 / 사이드내비 / 차트 / 카운터 ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{threshold:.12});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+const chartIO=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){
+    e.target.querySelectorAll('.fill').forEach(f=>{
+      f.style.width=(+f.dataset.w / +f.dataset.max*100)+'%';
+    });
+    chartIO.unobserve(e.target);
+  }
+}),{threshold:.4});
+document.querySelectorAll('.chart').forEach(c=>chartIO.observe(c));
+
+const cntIO=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){
+    e.target.querySelectorAll('[data-count]').forEach(el=>{
+      const target=+el.dataset.count,dur=1400,t0=performance.now();
+      (function tick(t){
+        const p=Math.min((t-t0)/dur,1),v=Math.round(target*(1-Math.pow(1-p,3)));
+        el.textContent=v;if(p<1)requestAnimationFrame(tick);
+      })(t0);
+    });
+    cntIO.unobserve(e.target);
+  }
+}),{threshold:.4});
+document.querySelectorAll('.stats').forEach(s=>cntIO.observe(s));
+
+const sections=[...document.querySelectorAll('section.block, header.hero')];
+const navLinks=[...document.querySelectorAll('nav.side a')];
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  document.getElementById('progress').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  let cur=0;
+  sections.forEach((s,i)=>{if(s.getBoundingClientRect().top<window.innerHeight*.4)cur=i;});
+  navLinks.forEach((a,i)=>a.classList.toggle('on',i===cur));
+},{passive:true});
+
+/* ---------- 챗봇 ---------- */
+const fab=document.getElementById('chat-fab'),panel=document.getElementById('chat-panel'),
+      log=document.getElementById('chat-log'),form=document.getElementById('chat-form'),
+      input=document.getElementById('chat-in'),sug=document.getElementById('chat-sug');
+let chatInit=false;
+fab.onclick=()=>{
+  panel.classList.toggle('show');
+  if(!chatInit){chatInit=true;
+    botSay('안녕하세요! 👋 이 강의 노트의 내용으로 답하는 <b>Q&A 봇</b>입니다. Data-Centric AI, MTMMC, 합성 데이터 생성, 품질 vs 수량 논쟁 등 무엇이든 물어보세요. 아래 추천 질문을 눌러도 됩니다.');
+    renderSug();
+  }
+  if(panel.classList.contains('show'))input.focus();
+};
+function botSay(html,src){
+  const m=document.createElement('div');m.className='msg bot';
+  m.innerHTML=html+(src?`<span class="src">📍 출처: ${src}</span>`:'');
+  log.appendChild(m);log.scrollTop=log.scrollHeight;
+}
+function userSay(t){
+  const m=document.createElement('div');m.className='msg user';m.textContent=t;
+  log.appendChild(m);log.scrollTop=log.scrollHeight;
+}
+function renderSug(){
+  sug.innerHTML='';
+  // 항상 다양한 추천이 보이도록 무작위 3개 선택
+  const idx=new Set();while(idx.size<3)idx.add(Math.floor(Math.random()*KB.length));
+  [...idx].forEach(i=>{
+    const b=document.createElement('button');b.textContent=KB[i].q;
+    b.onclick=()=>ask(KB[i].q);
+    sug.appendChild(b);
+  });
+}
+function norm(s){return s.toLowerCase().replace(/[?!.,'"]/g,' ').replace(/\s+/g,' ').trim();}
+function answer(qRaw){
+  const q=norm(qRaw);
+  let best=null,bestScore=0;
+  KB.forEach(e=>{
+    let s=0;
+    e.k.forEach(k=>{if(q.includes(norm(k)))s+=k.length>=4?3:2;});
+    // 대표 질문과의 단어 겹침도 가산
+    norm(e.q).split(' ').forEach(w=>{if(w.length>1&&q.includes(w))s+=1;});
+    if(s>bestScore){bestScore=s;best=e;}
+  });
+  if(best&&bestScore>=2)return best;
+  return null;
+}
+function ask(q){
+  userSay(q);input.value='';
+  setTimeout(()=>{
+    const hit=answer(q);
+    if(hit)botSay(hit.a,hit.s);
+    else botSay('음, 그 질문은 이 강의 노트의 범위를 벗어나는 것 같아요. 🙏<br>이런 주제로 물어봐 주세요: <b>데이터 중심 AI의 정의</b>, <b>MTMMC와 수집 비용</b>, <b>합성 데이터 생성 방법</b>, <b>KCL 4단계</b>, <b>품질 vs 수량</b>, <b>KOALA</b>, <b>CaptionSmiths</b>, <b>에이전틱 AI</b>…');
+    renderSug();
+  },350);
+}
+form.addEventListener('submit',e=>{
+  e.preventDefault();
+  const v=input.value.trim();if(v)ask(v);
+});
+</script>
+</body>
+</html>

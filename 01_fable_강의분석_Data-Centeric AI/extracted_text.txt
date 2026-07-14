@@ -1,0 +1,1333 @@
+=== PAGE 1 ===
+0
+A Data-Centric Perspective on Vision-Centered AI: 
+From Manual Collection to Automatic Generation
+Kwanyong Park,  
+Assistant Professor, University of Seoul
+
+=== PAGE 2 ===
+Kwanyong Park | Seminar at ETRI
+1
+Experiences
+Awards & Honors
+Electronics and Telecommunications Research Institue (ETRI, 한국전자통신연구원)
+Researcher (Military Service), Visual Intelligence Lab
+Sep.2023-Feb.2025
+Adobe Reserach
+Research Intern (Remote), Deep Learning Group, Creative Intelligence Lab
+Apr.2021-Dec.2021
+3rd place in the OmniLabel Challenge @ ECCV2024, Out of 68 teams
+Oct.2024
+WACV Best Student Paper Awards, Out of 641 papers (1577 submissions)
+Jan.2023
+Qualcomm Innovation Fellowship
+Nov.2021
+Kwanyong Park (박관용)
+University of Seoul (서울시립대학교)
+Assistant Professor, Department of Computer Science and Engineering
+Mar.2025-Present
+Korea Advanced Institute of Science and Technology (KAIST, 한국과학기술원)
+Graduate Student Researcher, Robotics and Computer Vision Lab (Advisor: Prof. In So Kwon) 
+Mar.2018-Aug.2023
+Research Keywords
+Computer Vision, Data-Centric AI, Multimodal AI, Generative AI
+Visual and General Intelligence Lab.
+https://visagi.uos.ac.kr/
+
+=== PAGE 3 ===
+The Early Unwritten Rule of Deep Learning Research
+“Fair Comparison”: Same Data, Better Model?
+Model
+- Network Architectures
+- Tuning Hyperparameters
+- Designing Training Loss ..
+Data
+(Benchmark Dataset)
+Kwanyong Park | Seminar at ETRI
+2
+Reference: Towards Data Science
+
+=== PAGE 4 ===
+The Early Unwritten Rule of Deep Learning Research
+“Fair Comparison”: Same Data, Better Model?
+Kwanyong Park | Seminar at ETRI
+3
+Reference: ResNet, COCO challenge 
+Abstract from ResNet (CVPR 2016) paper
+COCO Detection Challenge (2017)
+
+=== PAGE 5 ===
+Data Issue in the Early Stages of AI
+When algorithms are trained with erroneous data!
+Kwanyong Park | Seminar at ETRI
+4
+Reference: BBC
+
+=== PAGE 6 ===
+Traditional Machine Learning is model-centric 
+Kwanyong Park | Seminar at ETRI
+5
+• When you learn ML in school… a dataset is given to you, usually fairly clean 
+& well-curated (e.g. dog/cat images)
+• Your goal: produce the best model for this dataset (model-centric AI)
+• techniques taught in standard ML classes
+• In traditional (model-centric) ML, you learn: 
+•
+different types of models (eg. neural architectures)
+•
+tuning their hyperparameters
+•
+modifying the training loss function
+•
+regularization
+
+=== PAGE 7 ===
+In real-world ML applications, the dataset is not fixed!
+Kwanyong Park | Seminar at ETRI
+6
+• Company/user does not care what clever ML tricks you used to produce ac
+curate predictions on highly curated data.
+• Real-world data tends to be messy, so consider fixing issues in the data.
+• Ten of the most-used ML test sets have pervasive label errors
+• Seasoned data scientist: It’s more worthwhile to invest in exploring & fixing 
+the data than tinkering with models. (i.e. avoid “garbage in, garbage out”)
+
+=== PAGE 8 ===
+What is data-centric AI?
+Kwanyong Park | Seminar at ETRI
+7
+Data-centric AI often takes one of two forms:
+• AI algorithms that understand data and use that information to improve mo
+dels.
+• e.g. curriculum learning – train on ‘easy data’ first
+• Bengio et al., ICML, 2009 (link to paper)
+• AI algorithms that modify data to improve AI models.
+• e.g. confident learning – remove wrongly-labeled data prior to training
+• Northcutt et al., Journal of AI Research, 2021 (link to paper)
+
+=== PAGE 9 ===
+Model-centric AI vs Data-centric AI 
+Kwanyong Park | Seminar at ETRI
+8
+Data-centric AI:
+• Given any model, try to improve the training dataset 
+• Systematically/algorithmically change the dataset to improve performance 
+on an AI task
+Model-centric AI:
+●
+Given a dataset, try to produce the best model (think 6.036/6.390)
+●
+Change the model to improve performance on an AI task
+○
+e.g. modify the loss function, hyper-parameters, etc.
+
+=== PAGE 10 ===
+What are examples of Data-centric AI?
+Kwanyong Park | Seminar at ETRI
+9
+• Outlier Detection and Removal (handling abnormal examples in dataset)
+• Error Detection and Correction (handling incorrect values/labels in dataset)
+• Data Augmentation (adding examples to data to encode prior knowledge)
+• Feature Engineering and Selection (manipulating how data are represented)
+• Establishing Consensus Labels  (determining true label from crowdsourced annotations)
+• Active Learning  (selecting the most informative data to label next)
+• Curriculum Learning  (ordering the examples in dataset from easiest to hardest)
+
+=== PAGE 11 ===
+The Current Trend on Data for AI?
+A Meme About DeepSeek's Training Data 
+(in the field of Large Language Model)
+Kwanyong Park | Seminar at ETRI
+10
+Reference: deepseek, reddit
+
+=== PAGE 12 ===
+The Current Trend on Data for AI?
+Data Issue in DALL-E 2 from OpenAI
+(in the field of image generation)
+Kwanyong Park | Seminar at ETRI
+11
+Reference: Dall-e 2 (OpenAI) - https://openai.com/dall-e-2/#demos
+
+=== PAGE 13 ===
+The Current Trend on Data for AI?
+Trend of Large Vision-Language Model’s Openness (Open Models, Hidden Data?)
+Kwanyong Park | Seminar at ETRI
+12
+Reference: Molmo (AI2) - https://allenai.org/blog/molmo
+
+=== PAGE 14 ===
+A Data-Centric Perspective on Vision-Centered AI: 
+From Manual Collection to Automatic Generation
+
+=== PAGE 15 ===
+Outline of Today’s Talk
+Kwanyong Park | Seminar at ETRI
+14
+Multimodal 
+Generation
+Image/Video 
+Understanding
+Multispectral 
+Understanding
+Multimodal 
+Understanding
+Detect: “a person 
+jumping into the pool”
+Vision-Centered AI Tasks
+Data
+
+=== PAGE 16 ===
+Contents
+01. Large-scale Manual Data Collection
+02. Towards Automatic Data Generation
+03. Some Other Questions: Quality vs Quantity?
+04. Future Problems
+
+=== PAGE 17 ===
+Contents
+01. Large-scale Manual Data Collection
+02. Towards Automatic Data Generation
+03. Some Other Questions: Quality vs Quantity?
+04. Future Problems
+
+=== PAGE 18 ===
+AI Life Cycle: A-to-Z for Real World Applications
+Problem
+Definition
+Scoping
+Data
+Preparation
+Data
+Labeling
+Model
+Training
+Model
+Evaluation
+Model
+Deployment
+Data
+Modeling
+Deployment
+Kwanyong Park | Seminar at ETRI
+17
+
+=== PAGE 19 ===
+Kwanyong Park | Seminar at ETRI
+18
+MTMMC: A Large-Scale Real-World Multi-Modal Camera 
+Tracking Benchmark
+Sanghyun Woo*, Kwanyong Park*, Inkyu Shin*, Myungchul Kim*, In So Kweon
+KAIST    New York University    ETRI 
+CVPR 2024
+Project Page: https://sites.google.com/view/mtmmc
+
+=== PAGE 20 ===
+Tackling A Real-world Problem from Scratch
+Real-world Problems
+*MTMMC: A Large-Scale Real-World Multi-Modal Camera Tracking Benchmark (CVPR 2024)
+Icons courtesy of Freepik / Image courtesy of WHO
+Kwanyong Park | Seminar at ETRI
+19
+
+=== PAGE 21 ===
+Tackling A Real-world Problem from Scratch
+Real-world Problems
+Problem Design*
+*MTMMC: A Large-Scale Real-World Multi-Modal Camera Tracking Benchmark (CVPR 2024)
+Icons courtesy of Freepik / Image courtesy of WHO
+Kwanyong Park | Seminar at ETRI
+20
+
+=== PAGE 22 ===
+Intelligent Surveillance System
+Applications for Pandemic Scenario
+*MTMMC: A Large-Scale Real-World Multi-Modal Camera Tracking Benchmark (CVPR 2024)
+Icons courtesy of Freepik / Image courtesy of WHO
+Kwanyong Park | Seminar at ETRI
+21
+
+=== PAGE 23 ===
+Standard Problem Setup: Single View, RGB Camera
+Kwanyong Park | Seminar at ETRI
+22
+
+=== PAGE 24 ===
+Standard Problem Setup: Single View, RGB Camera
+Global community’s efforts remain on this standard setup. 
+Kwanyong Park | Seminar at ETRI
+23
+
+=== PAGE 25 ===
+New Problem Setup: Multiple Views, RGB Cameras
+Kwanyong Park | Seminar at ETRI
+24
+
+=== PAGE 26 ===
+Our Problem Setup: Multiple Views, RGB Cameras + X
+Thermal, 3D, Beacon
+Kwanyong Park | Seminar at ETRI
+25
+
+=== PAGE 27 ===
+Tackling A Real-world Problem from Scratch
+26
+Real-world Problems
+Problem Design*
+Data Preparation
+Hardware Design
+Environmental Setup
+(Hospital, Campus, Factory)
+Data Capture & Label
+Kwanyong Park | Seminar at ETRI
+26
+
+=== PAGE 28 ===
+Cam 1
+A Large, Long, and Diverse Multi-Modal Camera Tracking Benchmark
+Cam 3
+Cam 4
+Cam 2
+Cam 5
+Cam 7
+Cam 8
+Cam 6
+Cam 9
+Cam 11
+Cam 12
+Cam 10
+Cam 13
+Cam 15
+Cam 16
+Cam 14
+Real World Environment: KAIST Campus
+Kwanyong Park | Seminar at ETRI
+27
+
+=== PAGE 29 ===
+Cam 1
+Cam 3
+Cam 4
+Cam 2
+Cam 5
+Cam 7
+Cam 8
+Cam 6
+Cam 9
+Cam 11
+Cam 12
+Cam 10
+Cam 13
+Cam 15
+Cam 16
+Cam 14
+A Large, Long, and Diverse Multi-Modal Camera Tracking Benchmark
+Real World Environment: Factory
+Kwanyong Park | Seminar at ETRI
+28
+
+=== PAGE 30 ===
+Indoor
+Outdoor
+A Large, Long, and Diverse Multi-Modal Camera Tracking Benchmark
+Real World Environment: Indoor & Outdoor
+Kwanyong Park | Seminar at ETRI
+29
+
+=== PAGE 31 ===
+A Large, Long, and Diverse Multi-Modal Camera Tracking Benchmark
+Real World Environment: Multiple Floors
+Kwanyong Park | Seminar at ETRI
+30
+
+=== PAGE 32 ===
+1st floor of Factory
+2nd floor of Campus
+A Large, Long, and Diverse Multi-Modal Camera Tracking Benchmark
+Real World Environment: Overlapping Views
+Kwanyong Park | Seminar at ETRI
+31
+
+=== PAGE 33 ===
+RGBT camera with Coaxial Optical System
+RGB
+Thermal
+A Large, Long, and Diverse Multi-Modal Camera Tracking Benchmark
+Multi-modal Tracking: RGB and Thermal
+Kwanyong Park | Seminar at ETRI
+32
+
+=== PAGE 34 ===
+Efficient and Accurate Data Labeling Pipeline 
+Semi-automatic Labeling Approach
+with single-camera tracking model
+Semi-automatic Labeling Validation
+with task-specific time constraint
+Kwanyong Park | Seminar at ETRI
+33
+
+=== PAGE 35 ===
+Tackling A Real-world Problem from Scratch
+Real-world Problems
+Problem Design*
+Data Collection
+Model Design
+Real-world Deploy
+Kwanyong Park | Seminar at ETRI
+34
+
+=== PAGE 36 ===
+Tackling A Real-world Problem from Scratch
+Real-world Problems
+Problem Design*
+Data Collection
+Model Design
+Real-world Deploy
+Kwanyong Park | Seminar at ETRI
+35
+
+=== PAGE 37 ===
+Tackling A Real-world Problem from Scratch
+Real-world Problems
+Problem Design*
+Data Collection
+Model Design
+Real-world Deploy
+Total Time Required
+Accuracy
+Human
+1 hour 50 min
+34.6
+Half-auto
+1 hour (1.8x faster)
+60.4 (+25.8)
+Full-auto
+17 min (6.5x faster)
+97.9 (+63.4)
+Tracking Quality of COVID-19 Patients in a hospitals
+Kwanyong Park | Seminar at ETRI
+36
+
+=== PAGE 38 ===
+Summary of MTMMC Project
+Collecting large-scale datasets for complex tasks is nearly impossible in practice. 
+600↑Actors
+300↑Annotators
+40↑Researchers
+Privacy Issue
+License Issue
+
+
+
+
+
+
+
+6 Mon for Data Collection
+6 Mon for Annotations
+1 Year for Model Develop
+1 Year for Deployment
+
+
+
+
+2 million $ for Data
+5 million $ to Develop
+Kwanyong Park | Seminar at ETRI
+37
+
+=== PAGE 39 ===
+Can we easily collect or generate training data for AI?
+
+=== PAGE 40 ===
+Contents
+01. Large-scale Manual Data Collection
+39
+02. Towards Automatic Data Generation
+03. Some Other Questions: Quality vs Quantity?
+04. Future Problems
+
+=== PAGE 41 ===
+Advancement of Generative AI
+Generative models are powerful for natural language processing and video generation.
+40
+AI chatbot
+Text-to-Video Generator
+Reference: OpenAI
+Kwanyong Park | Seminar at ETRI
+40
+
+=== PAGE 42 ===
+Generative Models as Agent for Data Generation
+Leverage generative models as data generation agents
+Generative Models
+Data
+Text
+Image
+Audio
+Video
+Other 
+Modalities
+Kwanyong Park | Seminar at ETRI
+41
+Icons courtesy of Freepik
+
+=== PAGE 43 ===
+Generative Models as Agent for Data Generation
+Leverage generative models as data generation agents
+Generative Models
+Data
+Specialized AI Agent
+(AI Models)
+Kwanyong Park | Seminar at ETRI
+42
+
+=== PAGE 44 ===
+New Style of Challenges
+Leverage generative models as data generation agents
+Reference: https://syntagen.github.io/, https://syndata4cv.github.io/, https://generative-vision.github.io/workshop-CVPR-24/
+Kwanyong Park | Seminar at ETRI
+43
+
+=== PAGE 45 ===
+Data Generation for Image Classification
+Data generation framework with large language model and text-to-image model 
+Reference: Learning Vision from Models Rivals Learning Vision from Data (CVPR 2024)
+Kwanyong Park | Seminar at ETRI
+44
+
+=== PAGE 46 ===
+Data Generation for Image Classification
+Qualitative examples of generated data
+Reference: Learning Vision from Models Rivals Learning Vision from Data (CVPR 2024)
+Kwanyong Park | Seminar at ETRI
+45
+
+=== PAGE 47 ===
+Data Generation for Image Classification
+Learning vision from generative models rivals learning vision from data
+Kwanyong Park | Seminar at ETRI
+46
+
+=== PAGE 48 ===
+Data Generation for Image Classification
+Intriguing properties on feature visualization & model scaling
+Reference: Learning Vision from Models Rivals Learning Vision from Data (CVPR 2024)
+Kwanyong Park | Seminar at ETRI
+47
+
+=== PAGE 49 ===
+Data Generation for Image Classification
+Scaling property of generated data
+Reference: Scaling Laws of Synthetic Images for Model Training ... for Now (CVPR 2024)
+Kwanyong Park | Seminar at ETRI
+48
+
+=== PAGE 50 ===
+Data Generation for Image Classification
+“Concept Mismatches” between images and texts correlate with scaling property
+Reference: Scaling Laws of Synthetic Images for Model Training ... for Now (CVPR 2024)
+Kwanyong Park | Seminar at ETRI
+49
+
+=== PAGE 51 ===
+Data Generation for Image Classification
+3 Factors that affect data scaling
+-
+Text-to-Image models
+Stable Diffusion / Imagen / Muse …
+-
+Guidance Scale
+Lower CGF scale -> more diverse images -> better performance
+-
+Text prompts 
+More diverse prompts -> more diverse images -> better performance
+Reference: Scaling Laws of Synthetic Images for Model Training ... for Now (CVPR 2024)
+Kwanyong Park | Seminar at ETRI
+50
+
+=== PAGE 52 ===
+Is “generating training data using generative models”
+a scalable solution for more complex tasks?
+
+=== PAGE 53 ===
+Kwanyong Park | Seminar at ETRI
+52
+Towards Automating Training Data Generation 
+for Language-Based Object Detection
+Kwanyong Park, Donghyun Kim, Kuniaki Saito, Sojung An, Yong Jae Lee, Yong-Ju Lee, Youngwan Lee (alphabetical order)
+University of Seoul    Korea University    ETRI    UW-Madison    OMRON SINIC X Corporation
+ECCV 2024, NeurIPSW 2024, IJCV (Top 3.3%)
+*Weak-to-Strong Compositional Learning from Generative Models for Language-based Object Detection (ECCV 2024)
+*A Multimodal Chain of Tools for Described Object Detection (NeurIPS Workshop 2024)
+*Learning Compositionality from Multifaceted Synthetic Data for Language-based Object Detection (IJCV)
+
+=== PAGE 54 ===
+Case Study: Vision-Language Understanding
+Developing language-based object detection model for user-interactive perception 
+(ECCV 2024*, NeurIPSW 2024*, Under-revision at IJCV*)
+Kwanyong Park | Seminar at ETRI
+53
+*Weak-to-Strong Compositional Learning from Generative Models for Language-based Object Detection (ECCV 2024)
+*A Multimodal Chain of Tools for Described Object Detection (NeurIPS Workshop 2024)
+*Learning Compositionality from Multifaceted Synthetic Data for Language-based Object Detection (IJCV)
+
+=== PAGE 55 ===
+Essential Knowledge for Effective Described Object Detection 
+Vision
+Object Localization
+Language
+Description Understanding
+Multimodal
+Vision-Language Grounding
+Kwanyong Park | Seminar at ETRI
+54
+
+=== PAGE 56 ===
+Essential Knowledge for Effective Described Object Detection 
+Language
+Multimodal
+Vision
+Object Localization
+Description Understanding
+Vision-Language Grounding
+Object 
+Detector
+Large Language Model
+MLLM
+Multimodal Large 
+Language Model
+Detect
+Kwanyong Park | Seminar at ETRI
+55
+
+=== PAGE 57 ===
+How can scattered knowledge be consolidated into a single model?
+Language
+Multimodal
+Vision
+MLLM
+Detect
+Knowledge Consolidated Learning
+Consolidated 
+AI Model
+AI Model Pool
+Kwanyong Park | Seminar at ETRI
+56
+
+=== PAGE 58 ===
+How can scattered knowledge be consolidated into a single model?
+Language
+Multimodal
+Vision
+MLLM
+Knowledge Consolidated Learning
+Detect
+Consolidated 
+AI Model
+AI Model
+Pool
+Kwanyong Park | Seminar at ETRI
+57
+
+=== PAGE 59 ===
+Knowledge Consolidated Learning (1)
+1) Collaborative Data Generation:
+Generating training data through collaborative utilization of the specialized capabilities of each AI models
+Icons courtesy of Freepik
+AI Model Pool
+Text
+Image
+Video
+Other 
+Modalities
+Training Data
+Collaborative 
+Data Generation
+MLLM
+Detect
+Generative
+Models
+Kwanyong Park | Seminar at ETRI
+58
+
+=== PAGE 60 ===
+Knowledge Consolidated Learning (2)
+2) Data-aware Model Training:
+Developing new learning methods tailored to the characteristics of (generated) data
+AI Model Pool
+Text
+Image
+Video
+Other 
+Modalities
+Training Data
+Collaborative 
+Data Generation
+Consolidated AI Model
+Data-aware 
+Model Training
+MLLM
+Detect
+Generative
+Models
+Kwanyong Park | Seminar at ETRI
+59
+
+=== PAGE 61 ===
+Knowledge Consolidated Learning (3)
+3) Comprehensive model evaluation to identify failures:
+Developing a (semi-)automatic evaluation framework tailored to data characteristics.
+AI Model Pool
+Text
+Image
+Video
+Other 
+Modalities
+Training Data
+Collaborative 
+Data Generation
+Consolidated AI Model
+Data-aware 
+Model Training
+Evaluation
+MLLM
+Detect
+Generative
+Models
+Kwanyong Park | Seminar at ETRI
+60
+
+=== PAGE 62 ===
+Knowledge Consolidated Learning (4)
+4) Feedback on Data through Model Evaluation:
+(Semi-)automatically refining training data based on failure analysis.
+AI Model Pool
+Text
+Image
+Video
+Other 
+Modalities
+Training Data
+Collaborative 
+Data Generation
+Consolidated AI Model
+Data-aware 
+Model Training
+Evaluation
+Feedback on 
+Data
+MLLM
+Detect
+Generative
+Models
+Kwanyong Park | Seminar at ETRI
+61
+
+=== PAGE 63 ===
+Application for The Task of Described Object Detection
+Developing language-based object detection model for user-interactive perception 
+(ECCV 2024*, NeurIPSW 2024*, Under-revision at IJCV*)
+Kwanyong Park | Seminar at ETRI
+62
+*Weak-to-Strong Compositional Learning from Generative Models for Language-based Object Detection (ECCV 2024)
+*A Multimodal Chain of Tools for Described Object Detection (NeurIPS Workshop 2024)
+*Learning Compositionality from Multifaceted Synthetic Data for Language-based Object Detection (IJCV)
+
+=== PAGE 64 ===
+Knowledge Consolidated Learning (1)
+1) Collaborative Data Generation:
+Generating training data through collaborative utilization of the specialized capabilities of each AI models
+AI Model Pool
+Text
+Image
+Video
+Other 
+Modalities
+Training Data
+Collaborative 
+Data Generation
+MLLM
+Detect
+Generative
+Models
+Kwanyong Park | Seminar at ETRI
+63
+
+=== PAGE 65 ===
+Background: Traditional Data Collection Process
+Image Collection
+Annotation:
+Bounding Box & Class Label
+(Optional) Description Generation:
+(-) Small scale
+(-) Less Diverse
+(-) Brief description
+“Zebra”
+“Leftmost Zebra”
+Kwanyong Park | Seminar at ETRI
+64
+
+=== PAGE 66 ===
+Motivation and Goal of Data Generation
+Image Collection
+Annotation:
+Bounding Box & Class Label
+(Optional) Description Generation:
+(-) Small scale
+(-) Less Diverse
+(-) Brief description
+Detect: “Dish with broccoli in it”
+Model
+Short
+Description
+Medium
+Description
+Long
+Description
+GLIP
+29.4
+14.8
+8.2
+FIBER
+38.6
+19.5
+12.4
+Lack of Description-awareness
+Fail to understand long and comprehensive descriptions
+Performance decrease for longer descriptions
+Emerging Problems
+“Zebra”
+“Leftmost Zebra”
+Kwanyong Park | Seminar at ETRI
+65
+
+=== PAGE 67 ===
+Motivation and Goal of Data Generation
+Image Collection
+Annotation:
+Bounding Box & Class Label
+(Optional) Description Generation:
+(-) Small scale
+(-) Less Diverse
+(-) Brief description
+Detect: “Dish with broccoli in it”
+Model
+Short
+Description
+Medium
+Description
+Long
+Description
+GLIP
+29.4
+14.8
+8.2
+FIBER
+38.6
+19.5
+12.4
+Lack of Description-awareness
+Fail to understand long and comprehensive descriptions
+Performance decrease for longer descriptions
+Emerging Problems
+-> Need to generate Diverse Data
+-> Need to generate 
+comprehensive descriptions
+“Zebra”
+“Leftmost Zebra”
+Kwanyong Park | Seminar at ETRI
+66
+
+=== PAGE 68 ===
+Proposed Data Generation Framework (1)
+Prioritize Data Diversity and Comprehensive Descriptions First!
+[Bus]
+1. “A futuristic electric bus 
+navigating a smart city's streets.”
+2. “A yellow school bus 
+waiting outside a suburban elementary school.”
+3. “A red double-decker bus 
+parked next to a bustling city street.”
+4. “A bus engulfed in a cloud of 
+colorful smoke at a music festival.”
+5. “A sleek, modern bus 
+zooming down a busy highway.”
+6. “A vintage bus converted into 
+a food truck at a festival.”
+...
+Category Pool
+[Cow]
+[Cat]
+[Bird]
+[Person]
+[Book]
+[Bus]
+Large Language Model
+Collect Diverse Visual Concept
+* Harvest Commonsense on attribute, 
+relation with other object ...
+* Hold the Naturality of Descriptions
+* Control the Complexity
+Generate Diverse & Comprehensive 
+Descriptions
+Kwanyong Park | Seminar at ETRI
+67
+
+=== PAGE 69 ===
+Proposed Data Generation Framework (2)
+Transform into Images with Text-to-Image Diffusion Model
+[Bus]
+1. “A futuristic electric bus 
+navigating a smart city's streets.”
+2. “A yellow school bus 
+waiting outside a suburban elementary school.”
+3. “A red double-decker bus 
+parked next to a bustling city street.”
+4. “A bus engulfed in a cloud of 
+colorful smoke at a music festival.”
+5. “A sleek, modern bus 
+zooming down a busy highway.”
+6. “A vintage bus converted into 
+a food truck at a festival.”
+...
+<Description 1>
+<Description 2>
+<Description 3>
+<Description 4>
+Text-to-Image Diffusion Model
+Generated Diverse & Comprehensive 
+Descriptions
+* Easy to scale-up the data
+* Easy to model sparse data
+Generate Diverse Images
+(pairs of image and description)
+Kwanyong Park | Seminar at ETRI
+68
+
+=== PAGE 70 ===
+Remaining Crucial Problem (1)
+“An avocado lying on a cutting board.”
+Pseudo Box
+How to accurately label the bounding box according to comprehensive descriptions?
+Kwanyong Park | Seminar at ETRI
+69
+
+=== PAGE 71 ===
+Remaining Crucial Problem (2)
+“An avocado lying on a cutting board.”
+Pseudo Box
+How to accurately label the bounding box for given comprehensive descriptions?
+Object
+Localization
+Compositional
+Understanding
+Detect
+MLLM
+Kwanyong Park | Seminar at ETRI
+70
+
+=== PAGE 72 ===
+Simple yet Effective Task Decomposition
+Decompose complex labeling process into relatively simple localization and reasoning
+Detect
+MLLM
+Object
+Localization
+Compositional
+Understanding
+Automatic Labeling
+Detect: 
+“a person jumping into the pool”
+=
++
+Detect: 
+“person”
+Which one is correct?
+*A Multimodal Chain of Tools for Described Object Detection (NeurIPS Workshop 2024)
+Kwanyong Park | Seminar at ETRI
+71
+
+=== PAGE 73 ===
+Design for Task Decomposition
+Construct a multimodal chain of tools for task decomposition
+Detect
+MLLM
+Detect: 
+“a person jumping into the pool”
+Detect: 
+“person”
+Which one is correct?
+*A Multimodal Chain of Tools for Described Object Detection (NeurIPS Workshop 2024)
+Extract subject Word!
+Visual Prompting
+Kwanyong Park | Seminar at ETRI
+72
+
+=== PAGE 74 ===
+Knowledge Consolidated Learning (2)
+2) Data-aware Model Training:
+Developing new learning methods tailored to the characteristics of (generated) data
+Icons courtesy of Freepik
+AI Model Pool
+Text
+Image
+Video
+Other 
+Modalities
+Training Data
+Collaborative 
+Data Generation
+Consolidated AI Model
+Data-aware 
+Model Training
+MLLM
+Detect
+Generative
+Models
+Kwanyong Park | Seminar at ETRI
+73
+
+=== PAGE 75 ===
+Data-aware Learning Methods 
+1) Learning from Diversity of Data! - Learning description-awareness
+Learning from Dense Variations
+Kwanyong Park | Seminar at ETRI
+74
+
+=== PAGE 76 ===
+Data-aware Learning Methods 
+1) Learning from Diversity of Data! - Learning description-awareness
+2) Learning from Comprehensive Descriptions! - Learning textural Structure
+Learning from Dense Variations
+Learning from Textural Semantic
+Kwanyong Park | Seminar at ETRI
+75
+
+=== PAGE 77 ===
+Knowledge Consolidated Learning (3)
+3) Comprehensive model evaluation to identify failures::
+Developing a (semi-)automatic evaluation framework tailored to data characteristics.
+AI Model Pool
+Text
+Image
+Video
+Other 
+Modalities
+Training Data
+Collaborative 
+Data Generation
+Consolidated AI Model
+Data-aware 
+Model Training
+Evaluation
+MLLM
+Detect
+Generative
+Models
+Kwanyong Park | Seminar at ETRI
+76
+
+=== PAGE 78 ===
+When exactly does the described object detection model fail?
+Define types of multi-modal understanding
+Kwanyong Park | Seminar at ETRI
+77
+
+=== PAGE 79 ===
+Large-Language Model based Comprehensive Evaluation
+LLM-based Comprehensive Evaluation Framework & Results
+Kwanyong Park | Seminar at ETRI
+78
+
+=== PAGE 80 ===
+Knowledge Consolidated Learning (4)
+4) Feedback on Data through Model Evaluation:
+(Semi-)automatically refining training data based on failure analysis.
+AI Model Pool
+Text
+Image
+Video
+Other 
+Modalities
+Training Data
+Collaborative 
+Data Generation
+Consolidated AI Model
+Data-aware 
+Model Training
+Evaluation
+Feedback on 
+Data
+MLLM
+Detect
+Generative
+Models
+Kwanyong Park | Seminar at ETRI
+79
+
+=== PAGE 81 ===
+Learning from Failures with Feedbacks on Data
+Identified Failure Modes
+Data for Failure Modes
+Existing Data
+Consolidated 
+AI Model
+Kwanyong Park | Seminar at ETRI
+80
+
+=== PAGE 82 ===
+Visual Examples of Weakness-targeted Synthetic Data
+Kwanyong Park | Seminar at ETRI
+81
+
+=== PAGE 83 ===
+Generality of Leveraging Weakness-Targeted Synthetic Data
+Kwanyong Park | Seminar at ETRI
+82
+A Similar Attempt in LLM Reasoning for Mathematics
+Reference: SwS: Self-aware Weakness-driven Problem Synthesis in Reinforcement Learning for LLM Reasoning (NeurIPS 2025)
+
+=== PAGE 84 ===
+Impact of Generative Data
+Relatively small amount of generated data largely improve the performance.
+Fill-in the missing type of data and effective learning from generated data is crucial 
+Data
+Subset
+Overall 
+Performance
+Performance for 
+Long Query
+Real-world
+Data
+Object Detection (0.7M)
+22.3
+12.4
+Phrase Grounding (0.8M)
+Image-Caption (4M)
+Generated Data
+Machine Generated (58K)
+27.3 (+5.0AP)
+21.3 (+8.9AP)
+(+) Feedback on Data
+33.7 (+5.6AP)
+25.6 (+4.3AP)
+Kwanyong Park | Seminar at ETRI
+83
+*Weak-to-Strong Compositional Learning from Generative Models for Language-based Object Detection (ECCV 2024)
+*A Multimodal Chain of Tools for Described Object Detection (NeurIPS Workshop 2024)
+*Learning Compositionality from Multifaceted Synthetic Data for Language-based Object Detection (IJCV)
+
+=== PAGE 85 ===
+Impact of Generative Data
+Relatively small amount of generated data largely improve the performance.
+Fill-in the missing type of data and effective learning from generated data is crucial 
+Kwanyong Park | Seminar at ETRI
+84
+*Weak-to-Strong Compositional Learning from Generative Models for Language-based Object Detection (ECCV 2024)
+*A Multimodal Chain of Tools for Described Object Detection (NeurIPS Workshop 2024)
+*Learning Compositionality from Multifaceted Synthetic Data for Language-based Object Detection (IJCV)
+
+=== PAGE 86 ===
+Impressive Qualitative Results
+GT
+Ours
+Baseline
+Kwanyong Park | Seminar at ETRI
+85
+
+=== PAGE 87 ===
+Globally Competitive Results
+3rd place in the OmniLabel Challenge @ ECCV 2024
+(Out of 68 Teams)
+Rank
+Team
+1st
+China Mobile (Zhejiang) Research
+2nd
+Google & Meta
+3rd
+Ours
+Organizer: 
+Kwanyong Park | Seminar at ETRI
+86
+
+=== PAGE 88 ===
+Fundamental Questions About Data: Quantity vs. Quality?
+
+=== PAGE 89 ===
+Contents
+01. Large-scale Manual Data Collection
+88
+02. Towards Automatic Data Generation
+03. Some Other Questions: Quality vs Quantity?
+04. Future Problems
+
+=== PAGE 90 ===
+Kwanyong Park | Seminar at ETRI
+89
+KOALA: Empirical Lessons Toward Memory-Efficient and Fast 
+Diffusion Models for Text-to-Image Synthesis
+Youngwan Lee, Kwanyong Park, Yoorhim Cho, Yong-Ju Lee, Sung Ju Hwang
+ETRI    KAIST    Sookmyung Women's University    DeepAuto.ai
+NeurIPS 2024
+Project Page: https://youngwanlee.github.io/KOALA/ , Demo Page: https://huggingface.co/spaces/etri-vilab/KOALA
+
+=== PAGE 91 ===
+KOALA: Empirical Lessons Toward 
+Memory-Efficient and Fast Diffusion Models 
+for Text-to-Image Synthesis
+(NeurIPS 2024)
+KOALA-Lightning-700M can generate 1024x1024 resolution images in just one second.
+Kwanyong Park | Seminar at ETRI
+90
+Project Page: https://youngwanlee.github.io/KOALA/ , Demo Page: https://huggingface.co/spaces/etri-vilab/KOALA
+
+=== PAGE 92 ===
+Can You Guess Which Training Data Is Better?
+Kwanyong Park | Seminar at ETRI
+91
+Training Data Comparison for Text-to-Image Diffusion Models: The Case of KOALA
+LAION-A-6+ Dataset
+(Image-Text)
+8M images
++Internet-Crawled Text
+(13 words in average)
+LAION-A-6+ Dataset
+(Image-Text)
+8M images
++Model-Generated Text
+(72 words in average)
+<
+
+=== PAGE 93 ===
+Can You Guess Which Training Data Is Better?
+Kwanyong Park | Seminar at ETRI
+92
+Training Data Comparison for Text-to-Image Diffusion Models: The Case of KOALA
+LAION-A-6+ Dataset
+(Image-Text)
+8M images
+(580 × 676)
++ Model-Generated Text
+(72 words in average)
+LAION-POP
+(Image-Text)
+491K images
+(1274 × 1457)
++Model-Generated Text
+(81 words in average)
+<
+
+=== PAGE 94 ===
+For Now…, Data Quality Seems More Important
+Kwanyong Park | Seminar at ETRI
+93
+Training Data Comparison for Text-to-Video Diffusion Models
+Reference: Stable Video Diffusion: Scaling Latent Video Diffusion Models to Large Datasets (Stability AI)
+
+=== PAGE 95 ===
+For Now…, Data Quality Seems More Important
+Kwanyong Park | Seminar at ETRI
+94
+Training Data Comparison for Large Language Model
+Reference: s1: Simple test-time scaling
+
+=== PAGE 96 ===
+Kwanyong Park | Seminar at ETRI
+95
+CaptionSmiths: Flexibly Controlling Language Pattern
+in Image Captioning
+Kuniaki Saito, Donghyun Kim, Kwanyong Park, Atsushi Hashimoto, Yoshitaka Ushiku
+OMRON SINIC X Corporation   Korea University    University of Seoul
+ICCV 2025 Highlights
+
+=== PAGE 97 ===
+Research Question of CaptionSmiths
+Kwanyong Park | Seminar at ETRI
+96
+Can we control the language patterns with slider-like interface? (continuous conditioning)
+
+=== PAGE 98 ===
+High-level Concept of CaptionSmiths Model
+Kwanyong Park | Seminar at ETRI
+97
+We need continuous metric of length, uniqueness, descriptiveness for each caption.
+
+=== PAGE 99 ===
+Data-centric Solution
+Kwanyong Park | Seminar at ETRI
+98
+Simple Rule-based Condition Calculator for augmenting training data
+
+=== PAGE 100 ===
+Controllability of CaptionSmiths
+Kwanyong Park | Seminar at ETRI
+99
+Results of continuous length control
+
+=== PAGE 101 ===
+Controllability of CaptionSmiths
+Kwanyong Park | Seminar at ETRI
+100
+Qualitative results of descriptiveness and uniqueness control
+
+=== PAGE 102 ===
+Contents
+01. Large-scale Manual Data Collection
+101
+02. Towards Automatic Data Generation
+03. Some Other Questions: Quality vs Quantity?
+04. Future Problems
+
+=== PAGE 103 ===
+Future Problems
+Kwanyong Park | Seminar at ETRI
+102
+Agentic AI
+
+=== PAGE 104 ===
+Future Problems: Agentic AI for Data-Centric Approach?
+Kwanyong Park | Seminar at ETRI
+103
+Agentic AI Framework for Fully Automatic Data Construction and AI Model Training?
+-> Agentic AI-Based Framework for Self-evolving AI 
++
+
+=== PAGE 105 ===
+An Early-Stage, Limited-Scope Study
+Kwanyong Park | Seminar at ETRI
+104
+An Agentic System for Efficient Evaluation of Text-to-Image Diffusion Models
+(-) Applicable only to the evaluation system
+(-) Focused only on text-to-image diffusion models
+(where agentic systems are relatively easy to design)
+Reference: Evaluation Agent: Efficient and Promptable Evaluation Framework for Visual Generative Models
+
+=== PAGE 106 ===
+Future Problems: Agentic AI for Data-Centric Approach?
+Kwanyong Park | Seminar at ETRI
+105
+Retrieve from
+Related Data
+Automatic 
+Simulation
+Generate with
+Generative Models
+Evaluate &
+Feedback
+Agentic AI Framework for Fully Automatic Data Construction and AI Model Training?
+-> Agentic AI-Based Framework for Self-evolving AI
+
+=== PAGE 107 ===
+Summary
+01. Large-scale Manual Data Collection
+106
+02. Towards Automatic Data Generation
+03. Some Other Questions: Quality vs Quantity?
+04. Future Problems
+
+=== PAGE 108 ===
+Thank you
+Kwanyong Park | Seminar at ETRI
+107
