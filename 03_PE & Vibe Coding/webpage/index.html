@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PE &amp; Vibe Coding 세미나 해설 · 엄광호</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 상단 헤더 -->
+  <header class="site-header">
+    <div class="brand">
+      <h1 id="siteTitle">PE &amp; Vibe Coding 세미나 해설</h1>
+      <p class="subtitle" id="siteSub">엄광호 · 프롬프트 엔지니어링과 바이브 코딩</p>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-view="slides">슬라이드 뷰</button>
+      <button class="tab" data-view="concepts">📚 개념 사전</button>
+      <button class="tab" data-view="highlights">⭐ 강조</button>
+      <button class="tab" data-view="flow">🧭 학습 흐름</button>
+      <button class="tab" data-view="search">검색</button>
+      <button class="tab" data-view="qa">Q&amp;A</button>
+      <button class="tab" data-view="refs">참고문헌</button>
+      <button class="tab" data-view="memos">내 메모</button>
+    </nav>
+  </header>
+
+  <!-- 첫 진입 안내 카드 -->
+  <div id="introCard" class="intro-card">
+    <button id="introClose" class="intro-close" title="닫기">✕</button>
+    <h2>이 세미나는 무엇인가요?</h2>
+    <p><b>프롬프트 엔지니어링(PE)</b>으로 AI에게 잘 지시하는 법부터, <b>바이브 코딩</b>으로 AI와 함께 직접 만들고 세상에 내놓기까지 —
+       실무에서 바로 쓰는 209장의 교안을 쉬운 해설로 풀었습니다.</p>
+    <p class="intro-guide">추천 읽기 순서: <b>🧭 학습 흐름</b>으로 큰 그림을 잡고 → <b>슬라이드 뷰</b>로 하나씩 따라간 뒤 →
+       모르는 용어는 <b>📚 개념 사전</b>에서 확인하세요.</p>
+  </div>
+
+  <!-- 슬라이드 뷰 -->
+  <main id="view-slides" class="view active">
+    <aside class="toc" id="toc" aria-label="목차"></aside>
+    <!-- 목차↔슬라이드 드래그 스플리터 (더블클릭 시 기본 폭 복원) -->
+    <div class="splitter" id="splitLeft" data-split="left"
+         role="separator" aria-orientation="vertical" title="드래그로 목차 폭 조절 · 더블클릭 시 기본값"></div>
+    <section class="slide-stage">
+      <div class="slide-image-wrap">
+        <div class="slide-nav">
+          <button id="prevBtn" class="navbtn" title="이전 슬라이드 (←)">◀ 이전</button>
+          <span id="slideCounter" class="counter"></span>
+          <button id="nextBtn" class="navbtn" title="다음 슬라이드 (→)">다음 ▶</button>
+        </div>
+        <img id="slideImg" alt="슬라이드 이미지" loading="lazy">
+        <details class="raw-text">
+          <summary>슬라이드 원문 텍스트 보기</summary>
+          <pre id="slideRaw"></pre>
+        </details>
+      </div>
+    </section>
+    <!-- 슬라이드↔해설 드래그 스플리터 (더블클릭 시 기본 폭 복원) -->
+    <div class="splitter" id="splitRight" data-split="right"
+         role="separator" aria-orientation="vertical" title="드래그로 해설 패널 폭 조절 · 더블클릭 시 기본값"></div>
+    <aside class="explain-panel" id="explainPanel" aria-label="해설"></aside>
+  </main>
+
+  <!-- 개념 사전 -->
+  <main id="view-concepts" class="view">
+    <div class="section-head">
+      <h2>📚 개념 사전</h2>
+      <p class="hint">세미나에 등장한 핵심 개념을 웹 검색으로 검증해 쉽게 풀었습니다. 왼쪽에서 개념을 고르면 오른쪽에 상세 해설이 열립니다. <span class="cx-mk">(모델 지식)</span> 표시는 검증 출처 없이 일반 지식으로 보충한 부분입니다.</p>
+    </div>
+    <div class="cx-layout">
+      <aside class="cx-list" id="conceptList" aria-label="개념 목록"></aside>
+      <section class="cx-detail" id="conceptDetail"></section>
+    </div>
+  </main>
+
+  <!-- 강조 (강사가 강조한 내용) -->
+  <main id="view-highlights" class="view">
+    <div class="section-head">
+      <h2>⭐ 강사가 강조한 내용</h2>
+      <p class="hint">발표에서 특별히 강조·당부하거나, 실무 조언·주의점·평가로 짚은 지점만 모았습니다. 카테고리 버튼으로 걸러 볼 수 있고, 각 항목의 슬라이드 링크로 이동합니다.</p>
+    </div>
+    <div id="highlightFilters" class="hl-filters"></div>
+    <div id="highlightsList" class="hl-list"></div>
+  </main>
+
+  <!-- 학습 흐름 (인터랙티브) -->
+  <main id="view-flow" class="view">
+    <div class="section-head">
+      <h2>🧭 학습의 흐름</h2>
+      <p id="flowIntro" class="flow-intro"></p>
+      <p class="hint">갈래(track)를 고르고 단계를 클릭하면 개념 해설이 열립니다. 단계 사이 화살표는 "이전 단계 → 다음 단계로 넘어가는 이유"를 보여줍니다. <b>다음 개념 ▶</b>으로 흐름을 한 단계씩 따라갈 수 있습니다.</p>
+    </div>
+    <div id="flowTabs" class="flow-tabs" role="tablist"></div>
+    <div id="flowStage" class="flow-stage"></div>
+  </main>
+
+  <!-- 검색 -->
+  <main id="view-search" class="view">
+    <div class="search-box">
+      <input id="searchInput" type="search" placeholder="검색어 입력 (제목·원문·해설·용어·개념 대상, 공백으로 여러 단어)">
+    </div>
+    <p class="hint">대소문자 구분 없이 검색됩니다. 여러 단어는 모두 포함(AND)한 슬라이드가 우선 노출됩니다.</p>
+    <div id="searchResults" class="result-list"></div>
+  </main>
+
+  <!-- Q&A -->
+  <main id="view-qa" class="view">
+    <div class="qa-notice">이 답변은 세미나 자료 검색 기반으로 자동 구성됩니다. 정확한 내용은 인용된 슬라이드를 확인하세요.</div>
+    <div class="search-box">
+      <input id="qaInput" type="search" placeholder="궁금한 점을 질문하세요 (예: 바이브 코딩이 뭔가요?)">
+      <button id="qaBtn" class="primary-btn">질문하기</button>
+    </div>
+    <div class="faq-block">
+      <h3>자주 묻는 질문</h3>
+      <div id="faqButtons" class="faq-buttons"></div>
+    </div>
+    <div id="qaAnswer" class="qa-answer"></div>
+  </main>
+
+  <!-- 참고문헌 -->
+  <main id="view-refs" class="view">
+    <div class="refs-head">
+      <h2>참고문헌</h2>
+      <p class="hint">유형별로 정리했습니다. 각 항목의 인용 슬라이드를 클릭하면 해당 슬라이드로 이동합니다.</p>
+    </div>
+    <div id="refsList" class="refs-list"></div>
+  </main>
+
+  <!-- 내 메모 (모아보기) -->
+  <main id="view-memos" class="view">
+    <div class="memos-head">
+      <h2>내 메모</h2>
+      <div class="memos-actions">
+        <button id="exportMemosBtn" class="primary-btn">.md 파일로 내보내기</button>
+        <button id="importMemosBtn" class="ghost-btn">가져오기(.md)</button>
+        <input id="importMemosFile" type="file" accept=".md,.txt" hidden>
+      </div>
+    </div>
+    <p class="hint">메모는 이 브라우저에만 저장됩니다. 다른 브라우저로 옮기려면 내보내기 → 가져오기를 사용하세요.</p>
+    <div id="importResult" class="import-result" hidden></div>
+    <div id="memosList" class="memos-list"></div>
+  </main>
+
+  <footer class="site-footer">
+    <span id="footerMeta"></span>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
